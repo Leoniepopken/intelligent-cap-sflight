@@ -130,7 +130,7 @@
                 "@com.sap.vocabularies.UI.v1.LineItem": {
                   "actions": {
                     "GenerateReport.controller": {
-                      "press": "sap.fe.cap.travel.ext.controller.GenerateReport.controller.generateReport",
+                      "press": "sap.fe.cap.travel.ext.controller.GenerateReport.generateReport",
                       "visible": true,
                       "enabled": true,
                       "requiresSelection": true,
