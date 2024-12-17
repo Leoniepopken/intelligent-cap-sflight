@@ -19,6 +19,10 @@
   },
   "dependencies": {
     "@cap-js/hana": "^1",
+    "@sap-ai-sdk/ai-api": "^1.4.0",
+    "@sap-ai-sdk/foundation-models": "^1.4.0",
+    "@sap-ai-sdk/langchain": "^1.4.0",
+    "@sap-ai-sdk/orchestration": "^1.4.0",
     "@sap/cds": ">=8.4.0",
     "@sap/xssec": "^4",
     "express": "^4"
