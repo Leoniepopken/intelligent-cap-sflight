@@ -6,6 +6,7 @@ import {
 } from "#cds-models/TravelService";
 import { TravelStatusCode } from "#cds-models/sap/fe/cap/travel";
 import { CdsDate } from "#cds-models/_";
+import { OrchestrationClient } from "@sap-ai-sdk/orchestration";
 
 export class TravelService extends cds.ApplicationService {
   init() {
@@ -152,6 +153,30 @@ export class TravelService extends cds.ApplicationService {
 
     this.on(generateReport, async (req) => {
       console.log("Generating report...");
+
+      const orchestrationClient = new OrchestrationClient({
+        llm: {
+          model_name: "gpt-4o",
+          model_params: { max_tokens: 50, temperature: 0.1 },
+        },
+        templating: {
+          template: [
+            { role: "user", content: "What is the capital of {{?country}}?" },
+          ],
+        },
+      });
+
+      console.log("This is the orechstration client: ");
+      console.log(orchestrationClient);
+
+      try {
+        const response = await orchestrationClient.chatCompletion({
+          inputParams: { country: "France" },
+        });
+        console.log(response.getContent());
+      } catch (error) {
+        console.error("Error during orchestration:", error);
+      }
     });
 
     // Add base class's handlers. Handlers registered above go first.
