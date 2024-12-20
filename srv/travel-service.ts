@@ -152,8 +152,13 @@ export class TravelService extends cds.ApplicationService {
     });
 
     this.on(generateReport, async (req) => {
-      console.log("Generating report...");
+      // Get content of selected rows
+      const rows = await getSelectedRowsContent(req);
+      const content = rows.map((row) => row.TravelID); // Assuming you want to pass TravelID to LLM
 
+      console.log(`Content of selected rows: ${content}`);
+
+      // Initialize OrchestrationClient
       const orchestrationClient = new OrchestrationClient({
         llm: {
           model_name: "gpt-4o",
@@ -165,19 +170,21 @@ export class TravelService extends cds.ApplicationService {
           ],
         },
       });
-
-      console.log("This is the orechstration client: ");
-      console.log(orchestrationClient);
-
+      // Request chat completion
       try {
         const response = await orchestrationClient.chatCompletion({
-          inputParams: { country: "France" },
+          inputParams: { country: content.join(", ") }, // Pass all TravelIDs to LLM
         });
         console.log(response.getContent());
       } catch (error) {
         console.error("Error during orchestration:", error);
       }
     });
+
+    // Get content of selected rows
+    async function getSelectedRowsContent(req) {
+      return SELECT(req.subject);
+    }
 
     // Add base class's handlers. Handlers registered above go first.
     return super.init();

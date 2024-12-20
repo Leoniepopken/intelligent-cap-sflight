@@ -13,6 +13,7 @@ export function generateReport(this: ExtensionAPI, pageContext: Context) {
   (this as any).editFlow
     .invokeAction("TravelService.generateReport", {
       contexts: (this as any).getSelectedContexts(),
+      invocationGrouping: "ChangeSet",
     })
     .then((result: any) => console.log("Success", result))
     .catch((err: any) => console.error("Error invoking action", err));
