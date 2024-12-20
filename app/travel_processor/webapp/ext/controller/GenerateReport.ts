@@ -4,6 +4,7 @@ import MessageToast from "sap/m/MessageToast";
 import Dialog from "sap/m/Dialog";
 import Button from "sap/m/Button";
 import Text from "sap/m/Text";
+import TextArea from "sap/m/TextArea";
 
 /**
  * Generated event handler.
@@ -63,5 +64,44 @@ function openReportDialog(onConfirm: () => void) {
     },
   });
   // Open the dialog
+  dialog.open();
+}
+
+/**
+ * Helper function to create and display an editable dialog.
+ *
+ * @param llmOutput The initial text output from the LLM.
+ * @param onSave Callback function to execute when the user saves the edited data.
+ */
+function showEditableDialog(
+  llmOutput: string,
+  onSave: (editedData: string) => void
+) {
+  const dialog: any = new Dialog({
+    title: "Edit Report",
+    content: new TextArea({
+      value: llmOutput,
+      width: "100%",
+      rows: 10,
+      liveChange: (event) => {
+        const textArea = event.getSource() as TextArea;
+        dialog.data("editedData", textArea.getValue());
+      },
+    }),
+    beginButton: new Button({
+      text: "Save",
+      press: () => {
+        const editedData = dialog.data("editedData") || llmOutput;
+        dialog.close();
+        onSave(editedData);
+      },
+    }),
+    endButton: new Button({
+      text: "Cancel",
+      press: () => dialog.close(),
+    }),
+    afterClose: () => dialog.destroy(),
+  });
+
   dialog.open();
 }
