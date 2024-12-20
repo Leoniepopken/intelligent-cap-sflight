@@ -37,7 +37,7 @@ function openReportDialog(onConfirm: () => void) {
   const dialog = new Dialog({
     title: "Generate Report",
     content: new Text({
-      text: "Do you want to generate a report?",
+      text: "Do you want to generate a report? Please note that this action includes a LLM call. Please review the generated report",
     }),
     beginButton: new Button({
       text: "Yes",
