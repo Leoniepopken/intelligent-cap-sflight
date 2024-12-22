@@ -176,6 +176,7 @@ export class TravelService extends cds.ApplicationService {
           inputParams: { country: content.join(", ") }, // Pass all TravelIDs to LLM
         });
         console.log(response.getContent());
+        return { result: response.getContent() };
       } catch (error) {
         console.error("Error during orchestration:", error);
       }

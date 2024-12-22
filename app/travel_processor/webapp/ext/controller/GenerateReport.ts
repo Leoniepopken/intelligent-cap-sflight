@@ -21,9 +21,10 @@ export function generateReport(this: ExtensionAPI, pageContext: Context) {
         contexts: (this as any).getSelectedContexts(),
         invocationGrouping: "ChangeSet",
       })
-      .then((result: any) => {
+      .then((result: string) => {
         // Extract the output from the result
-        const llmOutput = result?.output || "No output generated";
+        console.log("Result of invoke action: ", result);
+        const llmOutput = result || "No output generated";
 
         // Show the editable dialog with the LLM output
         showEditableDialog(llmOutput, (editedData: string) => {
