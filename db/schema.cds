@@ -97,3 +97,8 @@ extend entity Travel with {
   GreenFee       : Decimal(16, 3) @Core.Computed @readonly;
   TreesPlanted   : Integer @Core.Computed @readonly;  
 };
+
+entity LLMResponse {
+  key ID : UUID;
+  conent : LargeString;
+}
