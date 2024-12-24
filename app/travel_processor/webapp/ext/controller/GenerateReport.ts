@@ -15,8 +15,8 @@ import TextArea from "sap/m/TextArea";
 export async function generateReport(this: ExtensionAPI, pageContext: Context) {
   // Call the helper function and pass the confirmation logic
   const response = await getLLMResponse();
-  console.log("LLM Response with fetch: ", response);
-  /*openReportDialog(() => {
+
+  openReportDialog(() => {
     // Logic to execute after user confirms in the dialog
     (this as any).editFlow
       .invokeAction("TravelService.generateReport", {
@@ -25,21 +25,18 @@ export async function generateReport(this: ExtensionAPI, pageContext: Context) {
       })
       .then(() => {
         // Show the editable dialog with the LLM output
-        showEditableDialog(
-          "Here will be the LLM output",
-          (editedData: string) => {
-            console.log("Edited Report Data:", editedData);
+        showEditableDialog(response, (editedData: string) => {
+          console.log("Edited Report Data:", editedData);
 
-            // Optionally, handle the saved data here (e.g., update the backend)
-            MessageToast.show("Report successfully generated and edited.");
-          }
-        );
+          // Optionally, handle the saved data here (e.g., update the backend)
+          MessageToast.show("Report successfully generated and edited.");
+        });
       })
       .catch((err: any) => {
         console.error("Error invoking action", err);
         MessageToast.show("Failed to generate the report.");
       });
-  });*/
+  });
 }
 
 /**
@@ -126,7 +123,8 @@ function getBaseURL() {
 
 async function getLLMResponse() {
   const url =
-    "http://localhost:4004/processor/Travel(TravelUUID='75757221AE84645C17020DF3754AB66',IsActiveEntity=true)/TravelService.generateReport";
+    getBaseURL() +
+    "/processor/Travel(TravelUUID='75757221AE84645C17020DF3754AB66',IsActiveEntity=true)/TravelService.generateReport";
 
   try {
     // 1) Construct the request
@@ -137,15 +135,16 @@ async function getLLMResponse() {
           "application/json;odata.metadata=minimal;IEEE754Compatible=true",
         Prefer: "handling=strict",
         "Content-Type": "application/json;charset=UTF-8;IEEE754Compatible=true",
+        Authorization: "Basic " + btoa("admin:admin"),
       },
       // 2) Body of the POST request (for actions with no input, empty object is fine)
       body: JSON.stringify({}),
     });
 
-    // 3) Convert response to JSON
+    // Convert response to JSON
     const data = await response.json();
 
-    console.log("OData action response:", data);
+    return data.value;
     // e.g. data.value => "It looks like your question is incomplete..."
   } catch (err) {
     console.error("Error calling generateReport:", err);
