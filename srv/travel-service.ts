@@ -175,8 +175,8 @@ export class TravelService extends cds.ApplicationService {
         const response = await orchestrationClient.chatCompletion({
           inputParams: { country: content.join(", ") }, // Pass all TravelIDs to LLM
         });
-        console.log(response.getContent());
-        return { response: response.getContent() };
+        console.log(response.getContent() as String);
+        return response.getContent() as String;
       } catch (error) {
         console.error("Error during orchestration:", error);
       }
