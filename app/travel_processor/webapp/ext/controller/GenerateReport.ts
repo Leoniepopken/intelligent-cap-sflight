@@ -21,18 +21,17 @@ export function generateReport(this: ExtensionAPI, pageContext: Context) {
         contexts: (this as any).getSelectedContexts(),
         invocationGrouping: "ChangeSet",
       })
-      .then((result: string) => {
-        // Extract the output from the result
-        console.log("Result of invoke action: ", result);
-        const llmOutput = result || "No output generated";
-
+      .then(() => {
         // Show the editable dialog with the LLM output
-        showEditableDialog(llmOutput, (editedData: string) => {
-          console.log("Edited Report Data:", editedData);
+        showEditableDialog(
+          "Here will be the LLM output",
+          (editedData: string) => {
+            console.log("Edited Report Data:", editedData);
 
-          // Optionally, handle the saved data here (e.g., update the backend)
-          MessageToast.show("Report successfully generated and edited.");
-        });
+            // Optionally, handle the saved data here (e.g., update the backend)
+            MessageToast.show("Report successfully generated and edited.");
+          }
+        );
       })
       .catch((err: any) => {
         console.error("Error invoking action", err);
