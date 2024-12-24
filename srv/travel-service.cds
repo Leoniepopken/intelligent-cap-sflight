@@ -13,9 +13,8 @@ service TravelService @(path:'/processor') {
     action rejectTravel();
     action acceptTravel();
     action deductDiscount( percent: Percentage not null ) returns Travel;
-    action generateReport();
+    action generateReport() returns { response: String };
   };
-  entity LLMResponse as projection on my.LLMResponse;
 }
 
 type Percentage : Integer @assert.range: [1,100];

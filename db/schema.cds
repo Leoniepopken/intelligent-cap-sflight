@@ -98,7 +98,6 @@ extend entity Travel with {
   TreesPlanted   : Integer @Core.Computed @readonly;  
 };
 
-entity LLMResponse {
-  key ID : UUID;
-  conent : LargeString;
+type LLMResponse {
+  response : LargeString;
 }
