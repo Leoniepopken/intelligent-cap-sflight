@@ -151,8 +151,6 @@ export class TravelService extends cds.ApplicationService {
     });
 
     this.on("generateReport", async (req: any) => {
-      // Get content of selected rows
-
       // Initialize OrchestrationClient
       const orchestrationClient = new OrchestrationClient({
         llm: {
