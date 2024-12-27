@@ -13,98 +13,82 @@ import TextArea from "sap/m/TextArea";
  * @param pageContext the context of the page on which the event was fired
  */
 export async function generateReport(this: ExtensionAPI, pageContext: Context) {
-  // Call the helper function and pass the confirmation logic
-  const response = await getLLMResponse();
+  try {
+    // Wait for user confirmation (or cancellation)
+    await confirmReportDialog();
 
-  openReportDialog(() => {
-    // Logic to execute after user confirms in the dialog
-    (this as any).editFlow
-      .invokeAction("TravelService.generateReport", {
-        contexts: (this as any).getSelectedContexts(),
-        invocationGrouping: "ChangeSet",
-      })
-      .then(() => {
-        // Show the editable dialog with the LLM output
-        showEditableDialog(response, (editedData: string) => {
-          console.log("Edited Report Data:", editedData);
+    // Invoke the backend action
+    const response = await invokeGenerateReportAction(this);
 
-          // Optionally, handle the saved data here (e.g., update the backend)
-          MessageToast.show("Report successfully generated and edited.");
-        });
-      })
-      .catch((err: any) => {
-        console.error("Error invoking action", err);
-        MessageToast.show("Failed to generate the report.");
-      });
+    // Handle the response (show an editable dialog to the user)
+    handleGeneratedReport(response);
+  } catch (err) {
+    // If the user cancelled or any error occurred, handle it here
+    MessageToast.show("Failed to generate the report.");
+  }
+}
+
+async function invokeGenerateReportAction(api: ExtensionAPI): Promise<any> {
+  return (api as any).editFlow.invokeAction("TravelService.generateReport", {
+    contexts: (api as any).getSelectedContexts(),
+    invocationGrouping: "ChangeSet",
   });
 }
 
-/**
- * Helper function to create and display a dialog.
- *
- * @param onConfirm Callback function to execute when the user confirms the action.
- */
-function openReportDialog(onConfirm: () => void) {
+function confirmReportDialog(): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    // Create the dialog
+    const dialog = new Dialog({
+      title: "Generate Report",
+      content: new Text({
+        text: "Do you want to generate a report? Please note that this action includes a LLM call. Please review the generated report",
+      }),
+      beginButton: new Button({
+        text: "Yes",
+        press: () => {
+          resolve();
+          dialog.close();
+        },
+      }),
+      endButton: new Button({
+        text: "No",
+        press: () => {
+          reject(new Error("User cancelled generation"));
+          dialog.close();
+        },
+      }),
+      afterClose: () => {
+        dialog.destroy();
+      },
+    });
+
+    // Open the dialog
+    dialog.open();
+  });
+}
+
+function handleGeneratedReport(response: any): void {
+  const generatedContent = response[0].value.getValue().value;
+
+  // Create the TextArea
+  const textArea = new TextArea({
+    value: generatedContent,
+    width: "100%",
+    rows: 10,
+  });
+
+  let dialog: Dialog;
+
   // Create the dialog
-  const dialog = new Dialog({
-    title: "Generate Report",
-    content: new Text({
-      text: "Do you want to generate a report? Please note that this action includes a LLM call. Please review the generated report",
-    }),
-    beginButton: new Button({
-      text: "Yes",
-      press: () => {
-        onConfirm();
-        dialog.close();
-      },
-    }),
-    endButton: new Button({
-      text: "No",
-      press: () => {
-        dialog.close();
-      },
-    }),
-    /**
-     * Cleanup function that destroys the dialog instance after it is closed.
-     * This ensures that resources are properly released and the dialog is
-     * not retained in memory.
-     */
-
-    afterClose: () => {
-      dialog.destroy();
-    },
-  });
-  // Open the dialog
-  dialog.open();
-}
-
-/**
- * Helper function to create and display an editable dialog.
- *
- * @param llmOutput The initial text output from the LLM.
- * @param onSave Callback function to execute when the user saves the edited data.
- */
-function showEditableDialog(
-  llmOutput: string,
-  onSave: (editedData: string) => void
-) {
-  const dialog: any = new Dialog({
+  dialog = new Dialog({
     title: "Edit Report",
-    content: new TextArea({
-      value: llmOutput,
-      width: "100%",
-      rows: 10,
-      liveChange: (event) => {
-        const textArea = event.getSource() as TextArea;
-        dialog.data("editedData", textArea.getValue());
-      },
-    }),
+    content: [textArea],
     beginButton: new Button({
       text: "Save",
       press: () => {
-        const editedData = dialog.data("editedData") || llmOutput;
+        const editedData = dialog.data("editedData") || generatedContent;
         dialog.close();
-        onSave(editedData);
+        MessageToast.show("Report successfully generated and edited.");
       },
     }),
     endButton: new Button({
@@ -114,39 +98,11 @@ function showEditableDialog(
     afterClose: () => dialog.destroy(),
   });
 
+  // Attach liveChange AFTER the dialog is declared
+  textArea.attachLiveChange((event) => {
+    const textArea = event.getSource() as TextArea;
+    dialog.data("editedData", textArea.getValue());
+  });
+
   dialog.open();
-}
-
-function getBaseURL() {
-  return window.location.protocol + "//" + window.location.host;
-}
-
-async function getLLMResponse() {
-  const url =
-    getBaseURL() +
-    "/processor/Travel(TravelUUID='75757221AE84645C17020DF3754AB66',IsActiveEntity=true)/TravelService.generateReport";
-
-  try {
-    // 1) Construct the request
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        Accept:
-          "application/json;odata.metadata=minimal;IEEE754Compatible=true",
-        Prefer: "handling=strict",
-        "Content-Type": "application/json;charset=UTF-8;IEEE754Compatible=true",
-        Authorization: "Basic " + btoa("admin:admin"),
-      },
-      // 2) Body of the POST request (for actions with no input, empty object is fine)
-      body: JSON.stringify({}),
-    });
-
-    // Convert response to JSON
-    const data = await response.json();
-
-    return data.value;
-    // e.g. data.value => "It looks like your question is incomplete..."
-  } catch (err) {
-    console.error("Error calling generateReport:", err);
-  }
 }
