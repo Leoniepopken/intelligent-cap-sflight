@@ -10,15 +10,21 @@ import TextArea from "sap/m/TextArea";
  * Generated event handler.
  *
  * @param this reference to the 'this' that the event handler is bound to.
- * @param pageContext the context of the page on which the event was fired
  */
-export async function generateReport(this: ExtensionAPI, pageContext: Context) {
+export async function generateReport(this: ExtensionAPI) {
+  const oEditFlow = (this as any).editFlow;
+
+  const travelIDs = collectSelectedRows(this);
+
   try {
     // Wait for user confirmation (or cancellation)
     await confirmReportDialog();
 
     // Invoke the backend action
-    const response = await invokeGenerateReportAction(this);
+    const response = await invokeGenerateReportAction(oEditFlow, {
+      name: "TravelUUIDs",
+      value: travelIDs,
+    });
 
     // Handle the response (show an editable dialog to the user)
     handleGeneratedReport(response);
@@ -26,12 +32,18 @@ export async function generateReport(this: ExtensionAPI, pageContext: Context) {
     // If the user cancelled or any error occurred, handle it here
     MessageToast.show("Failed to generate the report.");
   }
+
+  MessageToast.show("Custom handler invoked.");
 }
 
-async function invokeGenerateReportAction(api: ExtensionAPI): Promise<any> {
-  return (api as any).editFlow.invokeAction("TravelService.generateReport", {
-    contexts: (api as any).getSelectedContexts(),
-    invocationGrouping: "ChangeSet",
+async function invokeGenerateReportAction(
+  oEditFlow: any,
+  paramterValues: any
+): Promise<any> {
+  oEditFlow.invokeAction("TravelService.EntityContainer/generateReport", {
+    model: oEditFlow.getView().getModel(),
+    parameterValues: paramterValues,
+    skipParameterDialog: true,
   });
 }
 
@@ -105,4 +117,22 @@ function handleGeneratedReport(response: any): void {
   });
 
   dialog.open();
+}
+
+function collectSelectedRows(api: ExtensionAPI): string[] {
+  const oEditFlow = (api as any).editFlow;
+  const oModel = oEditFlow.getView().getModel();
+
+  const contextsSelected = oEditFlow
+    .getView()
+    .byId(
+      "sap.fe.cap.travel::TravelList--fe::table::Travel::LineItem-innerTable"
+    )
+    .getSelectedContexts();
+
+  const travelIDs = contextsSelected.map(
+    (context: any) => context.getObject().TravelUUID
+  );
+
+  return travelIDs;
 }
