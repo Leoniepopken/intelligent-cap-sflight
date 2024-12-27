@@ -21,10 +21,14 @@ export async function generateReport(this: ExtensionAPI) {
     await confirmReportDialog();
 
     // Invoke the backend action
-    const response = await invokeGenerateReportAction(oEditFlow, {
-      name: "TravelUUIDs",
-      value: travelIDs,
-    });
+    const response = oEditFlow.invokeAction(
+      "TravelService.EntityContainer/generateReport",
+      {
+        model: oEditFlow.getView().getModel(),
+        parameterValues: travelIDs,
+        skipParameterDialog: true,
+      }
+    );
 
     // Handle the response (show an editable dialog to the user)
     handleGeneratedReport(response);
@@ -32,19 +36,6 @@ export async function generateReport(this: ExtensionAPI) {
     // If the user cancelled or any error occurred, handle it here
     MessageToast.show("Failed to generate the report.");
   }
-
-  MessageToast.show("Custom handler invoked.");
-}
-
-async function invokeGenerateReportAction(
-  oEditFlow: any,
-  paramterValues: any
-): Promise<any> {
-  oEditFlow.invokeAction("TravelService.EntityContainer/generateReport", {
-    model: oEditFlow.getView().getModel(),
-    parameterValues: paramterValues,
-    skipParameterDialog: true,
-  });
 }
 
 function confirmReportDialog(): Promise<void> {
