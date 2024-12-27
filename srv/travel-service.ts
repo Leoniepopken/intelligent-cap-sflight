@@ -151,7 +151,8 @@ export class TravelService extends cds.ApplicationService {
     });
 
     this.on("generateReport", async (req: any) => {
-      console.log(req.data);
+      const content = JSON.parse(req.data.content);
+      console.log(content);
       // Initialize OrchestrationClient
       const orchestrationClient = new OrchestrationClient({
         llm: {
