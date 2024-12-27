@@ -14,8 +14,6 @@ import TextArea from "sap/m/TextArea";
 export async function generateReport(this: ExtensionAPI) {
   const oEditFlow = (this as any).editFlow;
 
-  const content = collectSelectedContent(this)[0];
-
   try {
     // Wait for user confirmation (or cancellation)
     await confirmReportDialog();
@@ -28,7 +26,7 @@ export async function generateReport(this: ExtensionAPI) {
         parameterValues: [
           {
             name: "content",
-            value: JSON.stringify(content),
+            value: JSON.stringify(collectSelectedContent(this)),
           },
         ],
         skipParameterDialog: true,
