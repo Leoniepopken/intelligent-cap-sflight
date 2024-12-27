@@ -21,7 +21,7 @@ export async function generateReport(this: ExtensionAPI) {
     await confirmReportDialog();
 
     // Invoke the backend action
-    const response = oEditFlow.invokeAction(
+    const response = await oEditFlow.invokeAction(
       "TravelService.EntityContainer/generateReport",
       {
         model: oEditFlow.getView().getModel(),
@@ -31,7 +31,7 @@ export async function generateReport(this: ExtensionAPI) {
     );
 
     // Handle the response (show an editable dialog to the user)
-    handleGeneratedReport(response);
+    handleGeneratedReport(response.value);
   } catch (err) {
     // If the user cancelled or any error occurred, handle it here
     MessageToast.show("Failed to generate the report.");
@@ -71,11 +71,9 @@ function confirmReportDialog(): Promise<void> {
 }
 
 function handleGeneratedReport(response: any): void {
-  const generatedContent = response[0].value.getValue().value;
-
   // Create the TextArea
   const textArea = new TextArea({
-    value: generatedContent,
+    value: response,
     width: "100%",
     rows: 10,
   });
@@ -89,7 +87,7 @@ function handleGeneratedReport(response: any): void {
     beginButton: new Button({
       text: "Save",
       press: () => {
-        const editedData = dialog.data("editedData") || generatedContent;
+        const editedData = dialog.data("editedData") || response;
         dialog.close();
         MessageToast.show("Report successfully generated and edited.");
       },
