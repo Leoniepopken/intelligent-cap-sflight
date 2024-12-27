@@ -14,7 +14,7 @@ import TextArea from "sap/m/TextArea";
 export async function generateReport(this: ExtensionAPI) {
   const oEditFlow = (this as any).editFlow;
 
-  const content = collectSelectedContent(this);
+  const content = collectSelectedContent(this)[0];
 
   try {
     // Wait for user confirmation (or cancellation)
@@ -25,7 +25,12 @@ export async function generateReport(this: ExtensionAPI) {
       "TravelService.EntityContainer/generateReport",
       {
         model: oEditFlow.getView().getModel(),
-        parameterValues: content,
+        parameterValues: [
+          {
+            name: "content",
+            value: JSON.stringify(content),
+          },
+        ],
         skipParameterDialog: true,
       }
     );
@@ -119,8 +124,6 @@ function collectSelectedContent(api: ExtensionAPI) {
     .getSelectedContexts();
 
   const content = contextsSelected.map((context: any) => context.getObject());
-
-  console.log(content);
 
   return content;
 }

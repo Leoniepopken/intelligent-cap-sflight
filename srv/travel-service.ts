@@ -151,6 +151,7 @@ export class TravelService extends cds.ApplicationService {
     });
 
     this.on("generateReport", async (req: any) => {
+      console.log(req.data);
       // Initialize OrchestrationClient
       const orchestrationClient = new OrchestrationClient({
         llm: {
@@ -173,7 +174,6 @@ export class TravelService extends cds.ApplicationService {
       } catch (error) {
         console.error("Error during orchestration:", error);
       }
-      console.log(req.data);
     });
 
     // Add base class's handlers. Handlers registered above go first.

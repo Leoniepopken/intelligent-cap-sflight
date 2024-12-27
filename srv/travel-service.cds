@@ -16,7 +16,7 @@ service TravelService @(path:'/processor') {
     // action generateReport() returns String;
   };
 
-  action generateReport() returns String;
+  action generateReport(content: String) returns String;
 }
 
 type Percentage : Integer @assert.range: [1,100];
