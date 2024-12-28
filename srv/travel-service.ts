@@ -151,8 +151,9 @@ export class TravelService extends cds.ApplicationService {
     });
 
     this.on("generateReport", async (req: any) => {
-      const content = JSON.parse(req.data.content);
-      console.log(content);
+      const rawContent = JSON.parse(req.data.content);
+      const filteredContet = filterContentFields(rawContent);
+      console.log(filteredContet);
       // Initialize OrchestrationClient
       const orchestrationClient = new OrchestrationClient({
         llm: {
@@ -176,6 +177,22 @@ export class TravelService extends cds.ApplicationService {
         console.error("Error during orchestration:", error);
       }
     });
+
+    /**
+     * Helper function for filtering content fields, such that token limit is not exceeded.
+     * @param {Array} rawContent - An array of travel objects
+     * @returns {Array} A new array, each object containing only the selected fields
+     */
+    function filterContentFields(rawContent) {
+      return rawContent.map((item) => ({
+        TravelID: item.TravelID,
+        BeginDate: item.BeginDate,
+        EndDate: item.EndDate,
+        Description: item.Description,
+        TotalPrice: item.TotalPrice,
+        TravelStatus_code: item.TravelStatus_code,
+      }));
+    }
 
     // Add base class's handlers. Handlers registered above go first.
     return super.init();
