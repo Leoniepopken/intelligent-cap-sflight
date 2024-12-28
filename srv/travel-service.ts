@@ -152,24 +152,27 @@ export class TravelService extends cds.ApplicationService {
 
     this.on("generateReport", async (req: any) => {
       const rawContent = JSON.parse(req.data.content);
-      const filteredContet = filterContentFields(rawContent);
-      console.log(filteredContet);
+      const filteredContent = filterContentFields(rawContent);
+
       // Initialize OrchestrationClient
       const orchestrationClient = new OrchestrationClient({
         llm: {
           model_name: "gpt-4o",
-          model_params: { max_tokens: 50, temperature: 0.1 },
+          model_params: { max_tokens: 500, temperature: 0.1 },
         },
         templating: {
           template: [
-            { role: "user", content: "What is the capital of {{?country}}?" },
+            {
+              role: "user",
+              content: `Generate a report based on the following content: {{?filteredContent}}`,
+            },
           ],
         },
       });
       // Request chat completion
       try {
         const response = await orchestrationClient.chatCompletion({
-          inputParams: { country: "Here will be the list of countries" }, // Pass all TravelIDs to LLM
+          inputParams: { filteredContent: JSON.stringify(filteredContent) },
         });
         console.log(response.getContent() as String);
         return response.getContent() as String;
