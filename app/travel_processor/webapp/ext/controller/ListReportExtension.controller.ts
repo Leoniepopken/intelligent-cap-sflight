@@ -63,11 +63,7 @@ function attachMenuButton(oView: any, sButtonId: string): void {
   const oMenuButton = new MenuButton({
     text: oButton.getText(),
     menu: oMenu,
-  });
-
-  oMenuButton.attachEvent("press", (oEvent: any) => {
-    // Implement logic for the press event
-    console.log("MenuButton pressed:", oEvent);
+    buttonMode: "Split",
   });
 
   // Replace the old Button with the new MenuButton
