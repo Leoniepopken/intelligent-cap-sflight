@@ -3,6 +3,12 @@ import ExtensionAPI from "sap/fe/templates/ObjectPage/ExtensionAPI";
 import Menu from "sap/m/Menu";
 import MenuItem from "sap/m/MenuItem";
 import MenuButton from "sap/m/MenuButton";
+import Button from "sap/m/Button";
+import Dialog from "sap/m/Dialog";
+import Label from "sap/m/Label";
+import Input from "sap/m/Input";
+import StepInput from "sap/m/StepInput";
+import Slider from "sap/m/Slider";
 
 /**
  * @namespace sap.fe.cap.travel.ext.controller
@@ -47,6 +53,7 @@ function attachMenuButton(oView: any, sButtonId: string): void {
         icon: "sap-icon://settings",
         press: () => {
           console.log("Extra Option 1 clicked.");
+          openHyperparametersDialog(oView);
         },
       }),
     ],
@@ -70,4 +77,94 @@ function attachMenuButton(oView: any, sButtonId: string): void {
     oMenuButton,
     /* bSuppressInvalidate = */ true
   );
+}
+
+/**
+ * Helper function to open a Dialog (overlay) for configuring LLM hyperparameters.
+ */
+function openHyperparametersDialog(oView: any): void {
+  // Create the dialog content dynamically.
+  // In real-world scenarios, you might use a fragment to handle complex UIs.
+
+  const oDialog = new Dialog({
+    title: "Configure AI Hyperparameters",
+    contentWidth: "400px",
+    content: [
+      new Label({ text: "Tone", labelFor: "toneInput", width: "100%" }),
+      new Input("toneInput", {
+        placeholder: "e.g. friendly, formal, creative...",
+        width: "100%",
+      }),
+
+      new Label({
+        text: "Max Tokens",
+        labelFor: "tokenStepInput",
+        width: "100%",
+        design: "Bold",
+      }),
+      new StepInput("tokenStepInput", {
+        min: 1,
+        max: 8000,
+        step: 100,
+        value: 1000,
+        description: "tokens",
+        width: "100%",
+      }),
+
+      new Label({
+        text: "Temperature",
+        labelFor: "temperatureSlider",
+        width: "100%",
+      }),
+      new Slider("temperatureSlider", {
+        min: 0,
+        max: 1,
+        step: 0.1,
+        value: 0.7,
+        width: "100%",
+      }),
+    ],
+    buttons: [
+      new Button({
+        text: "Save",
+        type: "Emphasized",
+        press: function () {
+          // Gather user inputs from the dialog
+          const sTone = (
+            sap.ui.getCore().byId("toneInput") as Input
+          ).getValue();
+          const iTokens = (
+            sap.ui.getCore().byId("tokenStepInput") as StepInput
+          ).getValue();
+          const fTemperature = (
+            sap.ui.getCore().byId("temperatureSlider") as Slider
+          ).getValue();
+
+          // Here you could do something with these values, e.g., store them in a model,
+          // pass them to a backend, or just log them:
+          console.log("Tone:", sTone);
+          console.log("Max Tokens:", iTokens);
+          console.log("Temperature:", fTemperature);
+
+          // Close the dialog
+          oDialog.close();
+        },
+      }),
+      new Button({
+        text: "Cancel",
+        press: function () {
+          oDialog.close();
+        },
+      }),
+    ],
+    afterClose: function () {
+      oDialog.destroy();
+    },
+  });
+
+  // Add dialog as a dependent to the view (so it gets destroyed with the view)
+  oView.addDependent(oDialog);
+
+  // Finally, open the dialog
+  oDialog.open();
 }
