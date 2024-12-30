@@ -221,6 +221,9 @@
         "sap.ui.controllerExtensions": {
           "sap.fe.templates.ObjectPage.ObjectPageController": {
             "controllerName": "sap.fe.cap.travel.ext.controller.ObjectPageExtension"
+          },
+          "sap.fe.templates.ListReport.ListReportController": {
+            "controllerName": "sap.fe.cap.travel.ext.controller.ListReportExtension"
           }
         }
       }
