@@ -5,30 +5,6 @@ import Dialog from "sap/m/Dialog";
 import Button from "sap/m/Button";
 import Text from "sap/m/Text";
 import TextArea from "sap/m/TextArea";
-import Menu from "sap/m/Menu";
-import MenuItem from "sap/m/MenuItem";
-
-export function onAfterRendering(this: ExtensionAPI): void {
-  const oView = (this as any).editFlow.getView();
-  const oButton = oView.byId(
-    "sap.fe.cap.travel::TravelList--fe::table::Travel::LineItem::CustomAction::GenerateReport.controller"
-  );
-
-  if (oButton) {
-    // Create a Menu with “Settings” item
-    const oMenu = new Menu({
-      items: [
-        new MenuItem({
-          text: "Settings",
-          // press: onOpenSettings.bind(this),
-        }),
-      ],
-    });
-
-    // Attach the menu to the existing button. This makes the button into a “MenuButton” with a small dropdown arrow.
-    (oButton as any).setMenu(oMenu);
-  }
-}
 
 /**
  * Generated event handler.
