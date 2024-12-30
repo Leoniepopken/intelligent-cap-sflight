@@ -25,7 +25,7 @@ export default class ListReportExtension extends ControllerExtension<ExtensionAP
         const oMenu = new Menu({
           items: [
             new MenuItem({
-              text: "Settings",
+              text: "Configure AI hyperparameters",
               icon: "sap-icon://settings",
               press: (oEvent) => {
                 // Implement your logic
