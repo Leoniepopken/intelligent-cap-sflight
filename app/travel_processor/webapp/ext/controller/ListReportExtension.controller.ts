@@ -64,6 +64,9 @@ function attachMenuButton(oView: any, sButtonId: string): void {
     text: oButton.getText(),
     menu: oMenu,
     buttonMode: "Split",
+    defaultAction: () => {
+      console.log("MenuButton default action triggered!");
+    },
   });
 
   // Replace the old Button with the new MenuButton
