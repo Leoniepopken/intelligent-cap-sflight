@@ -26,6 +26,7 @@ export default class ListReportExtension extends ControllerExtension<ExtensionAP
           items: [
             new MenuItem({
               text: "Settings",
+              icon: "sap-icon://settings",
               press: (oEvent) => {
                 // Implement your logic
                 console.log("Extra Option 1 clicked.");
@@ -37,7 +38,6 @@ export default class ListReportExtension extends ControllerExtension<ExtensionAP
         // Create a new MenuButton which mimics the original button’s properties
         const oMenuButton = new MenuButton({
           text: oButton.getText(),
-          icon: "sap-icon://machine-learning",
           menu: oMenu,
         });
 
