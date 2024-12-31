@@ -12,6 +12,7 @@ import StepInput from "sap/m/StepInput";
 import Slider from "sap/m/Slider";
 import MessageToast from "sap/m/MessageToast";
 import TextArea from "sap/m/TextArea";
+import { get } from "@sap/cds";
 
 /**
  * @namespace sap.fe.cap.travel.ext.controller
@@ -189,7 +190,7 @@ async function invokeGenerateReportAction(oView: any): Promise<void> {
         parameterValues: [
           {
             name: "content",
-            value: JSON.stringify("Hello world!"),
+            value: JSON.stringify(collectSelectedContent(oView)),
           },
         ],
         skipParameterDialog: true,
@@ -282,4 +283,21 @@ function handleGeneratedReport(response: any): void {
   });
 
   dialog.open();
+}
+
+function collectSelectedContent(oView: any) {
+  const oController = oView.getController();
+  const oEditFlow = oController.getExtensionAPI().editFlow;
+
+  const contextsSelected = oEditFlow
+    .getView()
+    .byId(
+      "sap.fe.cap.travel::TravelList--fe::table::Travel::LineItem-innerTable"
+    )
+    .getSelectedContexts();
+
+  const content = contextsSelected.map((context: any) => context.getObject());
+
+  console.log(content);
+  return content;
 }
