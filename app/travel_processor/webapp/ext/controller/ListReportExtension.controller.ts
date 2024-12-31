@@ -1,5 +1,6 @@
 import ControllerExtension from "sap/ui/core/mvc/ControllerExtension";
 import ExtensionAPI from "sap/fe/templates/ObjectPage/ExtensionAPI";
+
 import Menu from "sap/m/Menu";
 import MenuItem from "sap/m/MenuItem";
 import MenuButton from "sap/m/MenuButton";
@@ -66,6 +67,7 @@ function attachMenuButton(oView: any, sButtonId: string): void {
     buttonMode: "Split",
     defaultAction: () => {
       console.log("MenuButton default action triggered!");
+      invokeGenerateReportAction(oView);
     },
   });
 
@@ -166,4 +168,26 @@ function openHyperparametersDialog(oView: any): void {
 
   // Finally, open the dialog
   oDialog.open();
+}
+
+async function invokeGenerateReportAction(oView: any): Promise<void> {
+  const oController = oView.getController();
+  const oEditFlow = oController.getExtensionAPI().editFlow;
+
+  const response = await oEditFlow.invokeAction(
+    "TravelService.EntityContainer/generateReport",
+    {
+      model: oEditFlow.getView().getModel(),
+      parameterValues: [
+        {
+          name: "content",
+          value: JSON.stringify("Hello world!"),
+        },
+      ],
+      skipParameterDialog: true,
+    }
+  );
+
+  console.log("Generated report:", response.value);
+  return response.value;
 }

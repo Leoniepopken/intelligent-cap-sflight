@@ -152,7 +152,7 @@ export class TravelService extends cds.ApplicationService {
 
     this.on("generateReport", async (req: any) => {
       const rawContent = JSON.parse(req.data.content);
-      const filteredContent = filterContentFields(rawContent);
+      // const filteredContent = filterContentFields(rawContent);
 
       // Initialize OrchestrationClient
       const orchestrationClient = new OrchestrationClient({
@@ -180,7 +180,7 @@ export class TravelService extends cds.ApplicationService {
       // Request chat completion
       try {
         const response = await orchestrationClient.chatCompletion({
-          inputParams: { filteredContent: JSON.stringify(filteredContent) },
+          inputParams: { filteredContent: JSON.stringify(rawContent) },
         });
         console.log(response.getContent() as String);
         return response.getContent() as String;
