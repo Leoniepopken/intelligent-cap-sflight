@@ -10,6 +10,8 @@ import Label from "sap/m/Label";
 import Input from "sap/m/Input";
 import StepInput from "sap/m/StepInput";
 import Slider from "sap/m/Slider";
+import MessageToast from "sap/m/MessageToast";
+import TextArea from "sap/m/TextArea";
 
 /**
  * @namespace sap.fe.cap.travel.ext.controller
@@ -52,7 +54,7 @@ function attachMenuButton(oView: any, sButtonId: string): void {
       new MenuItem({
         text: "Configure AI hyperparameters",
         icon: "sap-icon://settings",
-        press: () => {
+        press: async () => {
           console.log("Extra Option 1 clicked.");
           openHyperparametersDialog(oView);
         },
@@ -172,23 +174,112 @@ function openHyperparametersDialog(oView: any): void {
 }
 
 async function invokeGenerateReportAction(oView: any): Promise<void> {
-  const oController = oView.getController();
-  const oEditFlow = oController.getExtensionAPI().editFlow;
+  try {
+    // 1) Ask for confirmation
+    await confirmReportDialog(oView);
 
-  const response = await oEditFlow.invokeAction(
-    "TravelService.EntityContainer/generateReport",
-    {
-      model: oEditFlow.getView().getModel(),
-      parameterValues: [
-        {
-          name: "content",
-          value: JSON.stringify("Hello world!"),
-        },
+    // 2) Only if user confirmed, invoke the report action
+    const oController = oView.getController();
+    const oEditFlow = oController.getExtensionAPI().editFlow;
+
+    const response = await oEditFlow.invokeAction(
+      "TravelService.EntityContainer/generateReport",
+      {
+        model: oEditFlow.getView().getModel(),
+        parameterValues: [
+          {
+            name: "content",
+            value: JSON.stringify("Hello world!"),
+          },
+        ],
+        skipParameterDialog: true,
+      }
+    );
+
+    console.log("Generated report:", response.value);
+
+    // 3) Open your 'handleGeneratedReport' dialog afterwards
+    handleGeneratedReport(response.value);
+
+    return response.value;
+  } catch (err) {
+    // This 'catch' is triggered if the user pressed "No" (rejected the promise),
+    // or if an error happened in the code above
+    console.log("User canceled or an error occurred:", err);
+  }
+}
+
+function confirmReportDialog(oView: any): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    // Create the dialog
+    const oDialog = new Dialog({
+      title: "Confirm Report",
+      content: [
+        new Label({ text: "Are you sure you want to confirm this report?" }),
       ],
-      skipParameterDialog: true,
-    }
-  );
+      buttons: [
+        new Button({
+          text: "Yes",
+          press: function () {
+            resolve(); // Resolve the promise if user confirms
+            oDialog.close();
+          },
+        }),
+        new Button({
+          text: "No",
+          press: function () {
+            reject(); // Reject if user cancels
+            oDialog.close();
+          },
+        }),
+      ],
+      afterClose: function () {
+        oDialog.destroy();
+      },
+    });
 
-  console.log("Generated report:", response.value);
-  return response.value;
+    // Add dialog as a dependent to the view
+    oView.addDependent(oDialog);
+
+    // Open the dialog
+    oDialog.open();
+  });
+}
+
+function handleGeneratedReport(response: any): void {
+  // Create the TextArea
+  const textArea = new TextArea({
+    value: response,
+    width: "100%",
+    rows: 10,
+  });
+
+  let dialog: Dialog;
+
+  // Create the dialog
+  dialog = new Dialog({
+    title: "Edit Report",
+    content: [textArea],
+    beginButton: new Button({
+      text: "Save",
+      press: () => {
+        const editedData = dialog.data("editedData") || response;
+        dialog.close();
+        MessageToast.show("Report successfully generated and edited.");
+      },
+    }),
+    endButton: new Button({
+      text: "Cancel",
+      press: () => dialog.close(),
+    }),
+    afterClose: () => dialog.destroy(),
+  });
+
+  // Attach liveChange AFTER the dialog is declared
+  textArea.attachLiveChange((event) => {
+    const textArea = event.getSource() as TextArea;
+    dialog.data("editedData", textArea.getValue());
+  });
+
+  dialog.open();
 }
