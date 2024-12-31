@@ -298,6 +298,5 @@ function collectSelectedContent(oView: any) {
 
   const content = contextsSelected.map((context: any) => context.getObject());
 
-  console.log(content);
   return content;
 }
