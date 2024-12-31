@@ -65,6 +65,7 @@ function attachMenuButton(oView: any, sButtonId: string): void {
     text: oButton.getText(),
     menu: oMenu,
     buttonMode: "Split",
+    useDefaultActionOnly: true,
     defaultAction: () => {
       console.log("MenuButton default action triggered!");
       invokeGenerateReportAction(oView);
