@@ -21,7 +21,11 @@ import { get } from "@sap/cds";
 export default class ListReportExtension extends ControllerExtension<ExtensionAPI> {
   static overrides = {
     onInit(this: ListReportExtension) {
-      console.log("ListReportExtension onInit called.");
+      (this as any)._hyperparams = {
+        tone: "neutral",
+        maxTokens: 1000,
+        temperature: 0.7,
+      };
     },
 
     onAfterRendering(this: ExtensionAPI): void {
@@ -88,9 +92,12 @@ function attachMenuButton(oView: any, sButtonId: string): void {
  * Helper function to open a Dialog (overlay) for configuring LLM hyperparameters.
  */
 function openHyperparametersDialog(oView: any): void {
-  // Create the dialog content dynamically.
-  // In real-world scenarios, you might use a fragment to handle complex UIs.
-
+  const oController = oView.getController();
+  const hyperparams = (oController as any)._hyperparams || {
+    tone: "",
+    maxTokens: 1000,
+    temperature: 0.7,
+  };
   const oDialog = new Dialog({
     title: "Configure AI Hyperparameters",
     contentWidth: "400px",
@@ -99,6 +106,7 @@ function openHyperparametersDialog(oView: any): void {
       new Input("toneInput", {
         placeholder: "e.g. friendly, formal, creative...",
         width: "100%",
+        value: hyperparams.tone,
       }),
 
       new Label({
@@ -111,7 +119,7 @@ function openHyperparametersDialog(oView: any): void {
         min: 1,
         max: 8000,
         step: 100,
-        value: 1000,
+        value: hyperparams.maxTokens,
         description: "tokens",
         width: "100%",
       }),
@@ -125,7 +133,7 @@ function openHyperparametersDialog(oView: any): void {
         min: 0,
         max: 1,
         step: 0.1,
-        value: 0.7,
+        value: hyperparams.temperature,
         width: "100%",
       }),
     ],
@@ -185,6 +193,12 @@ async function invokeGenerateReportAction(oView: any): Promise<void> {
     const oController = oView.getController();
     const oEditFlow = oController.getExtensionAPI().editFlow;
 
+    // Retrieve any stored hyperparameters (if they exist)
+    const hyperparams = (oController as any)._hyperparams || {};
+    const sTone = hyperparams.tone || "";
+    const iTokens = hyperparams.maxTokens || 500;
+    const fTemperature = hyperparams.temperature || 0.1;
+
     const response = await oEditFlow.invokeAction(
       "TravelService.EntityContainer/generateReport",
       {
@@ -193,6 +207,18 @@ async function invokeGenerateReportAction(oView: any): Promise<void> {
           {
             name: "content",
             value: JSON.stringify(collectSelectedContent(oView)),
+          },
+          {
+            name: "tone",
+            value: sTone,
+          },
+          {
+            name: "maxTokens",
+            value: iTokens,
+          },
+          {
+            name: "temperature",
+            value: fTemperature,
           },
         ],
         skipParameterDialog: true,
