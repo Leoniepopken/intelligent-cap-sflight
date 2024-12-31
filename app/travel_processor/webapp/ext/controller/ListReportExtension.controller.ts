@@ -145,11 +145,13 @@ function openHyperparametersDialog(oView: any): void {
             sap.ui.getCore().byId("temperatureSlider") as Slider
           ).getValue();
 
-          // Here you could do something with these values, e.g., store them in a model,
-          // pass them to a backend, or just log them:
-          console.log("Tone:", sTone);
-          console.log("Max Tokens:", iTokens);
-          console.log("Temperature:", fTemperature);
+          // Store hyperparameters on view controller
+          const oController = oView.getController();
+          (oController as any)._hyperparams = {
+            tone: sTone,
+            maxTokens: iTokens,
+            temperature: fTemperature,
+          };
 
           // Close the dialog
           oDialog.close();
