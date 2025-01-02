@@ -152,19 +152,23 @@ export class TravelService extends cds.ApplicationService {
 
     this.on("generateReport", async (req: any) => {
       const rawContent = JSON.parse(req.data.content);
-      // const filteredContent = filterContentFields(rawContent);
+      const filteredContent = filterContentFields(rawContent);
+
+      const tone = req.data.tone;
+      const maxTokens = req.data.maxTokens;
+      const temperature = req.data.temperature;
 
       // Initialize OrchestrationClient
       const orchestrationClient = new OrchestrationClient({
         llm: {
           model_name: "gpt-4o",
-          model_params: { max_tokens: 500, temperature: 0.1 },
+          model_params: { max_tokens: maxTokens, temperature: temperature },
         },
         templating: {
           template: [
             {
               role: "user",
-              content: `You are a travel planner. 
+              content: `You are a travel planner. Tone: {{?tone}}
               Generate a report based on the following content: {{?filteredContent}}. 
               An travel status of X means canceled, A means accepted, O means open.
               The report should be of the following form:
@@ -180,9 +184,15 @@ export class TravelService extends cds.ApplicationService {
       // Request chat completion
       try {
         const response = await orchestrationClient.chatCompletion({
-          inputParams: { filteredContent: JSON.stringify(rawContent) },
+          inputParams: {
+            filteredContent: JSON.stringify(rawContent),
+            tone: tone,
+          },
         });
-        console.log(response.getContent() as String);
+
+        console.log("Invoked LLM with the following parameters: ");
+        console.log(console.log(req.data));
+
         return response.getContent() as String;
       } catch (error) {
         console.error("Error during orchestration:", error);
