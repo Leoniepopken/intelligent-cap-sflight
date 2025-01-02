@@ -12,7 +12,6 @@ import StepInput from "sap/m/StepInput";
 import Slider from "sap/m/Slider";
 import MessageToast from "sap/m/MessageToast";
 import TextArea from "sap/m/TextArea";
-import { get } from "@sap/cds";
 
 /**
  * @namespace sap.fe.cap.travel.ext.controller
@@ -197,9 +196,9 @@ async function invokeGenerateReportAction(oView: any): Promise<void> {
 
     // Retrieve any stored hyperparameters (if they exist)
     const hyperparams = (oController as any)._hyperparams || {};
-    const sTone = hyperparams.tone || "";
-    const iTokens = hyperparams.maxTokens || 500;
-    const fTemperature = hyperparams.temperature || 0.1;
+    const tone = hyperparams.tone || "";
+    const tokens = hyperparams.maxTokens || 100;
+    const temperature = hyperparams.temperature || 0.1;
 
     const response = await oEditFlow.invokeAction(
       "TravelService.EntityContainer/generateReport",
@@ -212,22 +211,20 @@ async function invokeGenerateReportAction(oView: any): Promise<void> {
           },
           {
             name: "tone",
-            value: sTone,
+            value: tone,
           },
           {
             name: "maxTokens",
-            value: iTokens,
+            value: tokens,
           },
           {
             name: "temperature",
-            value: fTemperature,
+            value: temperature,
           },
         ],
         skipParameterDialog: true,
       }
     );
-
-    console.log("Generated report:", response.value);
 
     // 3) Open your 'handleGeneratedReport' dialog afterwards
     handleGeneratedReport(response.value);
