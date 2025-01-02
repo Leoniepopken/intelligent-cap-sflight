@@ -29,10 +29,9 @@ export default class ListReportExtension extends ControllerExtension<ExtensionAP
     },
 
     onAfterRendering(this: ExtensionAPI): void {
-      // Retrieve the view
       const oView = (this as any).getView();
 
-      // Call the helper function with the ID of the existing button to replace
+      // Call the helper function with the ID of the existing button to replace by the menub utton
       attachMenuButton(
         oView,
         "sap.fe.cap.travel::TravelList--fe::table::Travel::LineItem::CustomAction::GenerateReport.controller"
@@ -184,6 +183,9 @@ function openHyperparametersDialog(oView: any): void {
   oDialog.open();
 }
 
+/**
+ * Helper function to invoke the report backend action.
+ */
 async function invokeGenerateReportAction(oView: any): Promise<void> {
   try {
     // 1) Ask for confirmation
@@ -238,6 +240,9 @@ async function invokeGenerateReportAction(oView: any): Promise<void> {
   }
 }
 
+/**
+ * Helper function to show a confirmation dialog.
+ */
 function confirmReportDialog(oView: any): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     // Create the dialog
@@ -275,6 +280,9 @@ function confirmReportDialog(oView: any): Promise<void> {
   });
 }
 
+/**
+ * Helper function to edit and save the generated report.
+ */
 function handleGeneratedReport(response: any): void {
   // Create the TextArea
   const textArea = new TextArea({
@@ -313,6 +321,9 @@ function handleGeneratedReport(response: any): void {
   dialog.open();
 }
 
+/**
+ * Helper function to collect the selected content.
+ */
 function collectSelectedContent(oView: any) {
   const oController = oView.getController();
   const oEditFlow = oController.getExtensionAPI().editFlow;
