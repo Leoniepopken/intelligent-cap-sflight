@@ -13,6 +13,23 @@
       #container-uiarea {
         height: 100%;
       }
+
+      #floatingContainer {
+        position: fixed;
+        bottom: 20px;
+        right: 100px;
+        z-index: 99999;
+        box-sizing: border-box;
+
+        width: 66px;
+        height: 66px;
+
+        border-radius: 6px;
+        background-color: #fff;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+      }
     </style>
     <script
       id="sap-ui-bootstrap"
@@ -36,5 +53,6 @@
       data-settings='{"id" : "sap.fe.cap.travel"}'
       data-handle-validation="true"
     ></div>
+    <div id="floatingContainer"></div>
   </body>
 </html>

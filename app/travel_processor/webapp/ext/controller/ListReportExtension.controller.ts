@@ -18,6 +18,8 @@ import TextArea from "sap/m/TextArea";
  * @controller
  */
 export default class ListReportExtension extends ControllerExtension<ExtensionAPI> {
+  private _oChatButton: Button | null = null; // Keep reference so we don't re-create
+
   static overrides = {
     onInit(this: ListReportExtension) {
       (this as any)._hyperparams = {
@@ -35,8 +37,26 @@ export default class ListReportExtension extends ControllerExtension<ExtensionAP
         oView,
         "sap.fe.cap.travel::TravelList--fe::table::Travel::LineItem::CustomAction::GenerateReport.controller"
       );
+
+      if (!(this as any)._oChatButton) {
+        (this as any)._oChatButton = createFloatingChatButton(oView);
+      }
     },
   };
+}
+
+function createFloatingChatButton(oView: any): Button {
+  // Create the button
+  const oChatButton = new Button({
+    icon: "sap-icon://discussion",
+    tooltip: "Open Chat",
+    //press: () => openChatDialog(oView),
+  });
+
+  // "placeAt" can place the button at the root of the HTML body (content), or a container
+  oChatButton.placeAt("floatingContainer");
+
+  return oChatButton;
 }
 
 /**
