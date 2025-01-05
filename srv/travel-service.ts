@@ -192,6 +192,15 @@ export class TravelService extends cds.ApplicationService {
           input: azureContentFilter,
           output: azureContentFilter,
         },
+        masking: {
+          masking_providers: [
+            {
+              type: "sap_data_privacy_integration",
+              method: "pseudonymization",
+              entities: [{ type: "profile-email" }, { type: "profile-person" }],
+            },
+          ],
+        },
       });
       // Request chat completion
       try {
