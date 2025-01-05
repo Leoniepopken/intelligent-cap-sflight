@@ -4,13 +4,14 @@ import MenuItem from "sap/m/MenuItem";
 import { openHyperparametersDialog } from "./DialogUtils";
 import MenuButton from "sap/m/MenuButton";
 import { invokeGenerateReportAction } from "./GenerateReportUtils";
+import { openChatDialog } from "./DialogUtils";
 
 export function createFloatingChatButton(oView: any): Button {
   // Create the button
   const oChatButton = new Button({
     icon: "sap-icon://discussion",
     tooltip: "Open Chat",
-    //press: () => openChatDialog(oView),
+    press: () => openChatDialog(oView),
   });
 
   // "placeAt" can place the button at the root of the HTML body (content), or a container
