@@ -6,7 +6,10 @@ import {
 } from "#cds-models/TravelService";
 import { TravelStatusCode } from "#cds-models/sap/fe/cap/travel";
 import { CdsDate } from "#cds-models/_";
-import { OrchestrationClient } from "@sap-ai-sdk/orchestration";
+import {
+  OrchestrationClient,
+  buildAzureContentFilter,
+} from "@sap-ai-sdk/orchestration";
 
 export class TravelService extends cds.ApplicationService {
   init() {
@@ -154,6 +157,11 @@ export class TravelService extends cds.ApplicationService {
       const rawContent = JSON.parse(req.data.content);
       const filteredContent = filterContentFields(rawContent);
 
+      const azureContentFilter = buildAzureContentFilter({
+        Hate: 2,
+        Violence: 2,
+      });
+
       const tone = req.data.tone;
       const maxTokens = req.data.maxTokens;
       const temperature = req.data.temperature;
@@ -179,6 +187,10 @@ export class TravelService extends cds.ApplicationService {
               `,
             },
           ],
+        },
+        filtering: {
+          input: azureContentFilter,
+          output: azureContentFilter,
         },
       });
       // Request chat completion
