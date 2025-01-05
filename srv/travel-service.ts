@@ -185,7 +185,7 @@ export class TravelService extends cds.ApplicationService {
       try {
         const response = await orchestrationClient.chatCompletion({
           inputParams: {
-            filteredContent: JSON.stringify(rawContent),
+            filteredContent: JSON.stringify(filteredContent),
             tone: tone,
           },
         });
