@@ -3,7 +3,7 @@ import Menu from "sap/m/Menu";
 import MenuItem from "sap/m/MenuItem";
 import { openHyperparametersDialog } from "./DialogUtils";
 import MenuButton from "sap/m/MenuButton";
-import { invokeGenerateReportAction } from "./GenerateReportUtils";
+import { invokeGenerateReportAction } from "./LLMUtils";
 import { openChatDialog } from "./DialogUtils";
 
 export function createFloatingChatButton(oView: any): Button {
