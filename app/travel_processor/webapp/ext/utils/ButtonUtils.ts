@@ -46,6 +46,16 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
     ],
   });
 
+  const template = `You are a travel planner. Tone: {{?tone}}
+              Generate a report based on the following content: {{?filteredContent}}. 
+              An travel status of X means canceled, A means accepted, O means open.
+              The report should be of the following form:
+              - The total number of travels
+              - The total number of accepted travels
+              - The total number of canceled travels
+              - The total number of rejected travels
+              `;
+
   // Create a new MenuButton which mimics the original button’s properties
   const oMenuButton = new MenuButton({
     text: oButton.getText(),
@@ -54,7 +64,7 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
     useDefaultActionOnly: true,
     defaultAction: () => {
       console.log("MenuButton default action triggered!");
-      invokeGenerateReportAction(oView);
+      invokeGenerateReportAction(oView, template);
     },
   });
 

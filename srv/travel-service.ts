@@ -153,7 +153,7 @@ export class TravelService extends cds.ApplicationService {
       }
     });
 
-    this.on("generateReport", async (req: any) => {
+    this.on("invokeLLM", async (req: any) => {
       const rawContent = JSON.parse(req.data.content);
       const filteredContent = filterContentFields(rawContent);
 
@@ -166,6 +166,8 @@ export class TravelService extends cds.ApplicationService {
       const maxTokens = req.data.maxTokens;
       const temperature = req.data.temperature;
 
+      const template = req.data.template;
+
       // Initialize OrchestrationClient
       const orchestrationClient = new OrchestrationClient({
         llm: {
@@ -176,15 +178,7 @@ export class TravelService extends cds.ApplicationService {
           template: [
             {
               role: "user",
-              content: `You are a travel planner. Tone: {{?tone}}
-              Generate a report based on the following content: {{?filteredContent}}. 
-              An travel status of X means canceled, A means accepted, O means open.
-              The report should be of the following form:
-              - The total number of travels
-              - The total number of accepted travels
-              - The total number of canceled travels
-              - The total number of rejected travels
-              `,
+              content: template,
             },
           ],
         },

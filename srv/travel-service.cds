@@ -15,7 +15,7 @@ service TravelService @(path:'/processor') {
     action deductDiscount( percent: Percentage not null ) returns Travel;
   };
 
-  action generateReport(content: String, tone : String, maxTokens: Integer, temperature: Double) returns String;
+  action invokeLLM(content: String, tone : String, maxTokens: Integer, temperature: Double, template: String) returns String;
 }
 
 type Percentage : Integer @assert.range: [1,100];

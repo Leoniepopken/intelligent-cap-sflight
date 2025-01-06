@@ -3,7 +3,10 @@ import { confirmReportDialog, handleGeneratedReport } from "./DialogUtils";
 /**
  * Helper function to invoke the report backend action.
  */
-export async function invokeGenerateReportAction(oView: any): Promise<void> {
+export async function invokeGenerateReportAction(
+  oView: any,
+  template: String
+): Promise<void> {
   try {
     // 1) Ask for confirmation
     await confirmReportDialog(oView);
@@ -19,7 +22,7 @@ export async function invokeGenerateReportAction(oView: any): Promise<void> {
     const temperature = hyperparams.temperature || 0.1;
 
     const response = await oEditFlow.invokeAction(
-      "TravelService.EntityContainer/generateReport",
+      "TravelService.EntityContainer/invokeLLM",
       {
         model: oEditFlow.getView().getModel(),
         parameterValues: [
@@ -39,6 +42,7 @@ export async function invokeGenerateReportAction(oView: any): Promise<void> {
             name: "temperature",
             value: temperature,
           },
+          { name: "template", value: template },
         ],
         skipParameterDialog: true,
       }
