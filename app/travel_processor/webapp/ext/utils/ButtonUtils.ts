@@ -49,7 +49,7 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
   // Create a new MenuButton which mimics the original button’s properties
   const oMenuButton = new MenuButton({
     text: oButton.getText(),
-    menu: oMenu,
+    menu: oMenu.addStyleClass("customMenu"),
     buttonMode: "Split",
     useDefaultActionOnly: true,
     defaultAction: () => {
