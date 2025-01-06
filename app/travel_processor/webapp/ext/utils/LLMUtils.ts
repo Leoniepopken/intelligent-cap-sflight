@@ -3,7 +3,7 @@ import { confirmReportDialog, handleGeneratedReport } from "./DialogUtils";
 /**
  * Helper function to invoke the report backend action.
  */
-export async function invokeGenerateReportAction(
+export async function invokeLLMAction(
   oView: any,
   template: String
 ): Promise<void> {
