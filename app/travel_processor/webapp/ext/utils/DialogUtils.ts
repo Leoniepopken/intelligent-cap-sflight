@@ -190,7 +190,6 @@ export function handleGeneratedReport(response: any): void {
  * Opens a chat dialog for users to interact with an LLM.
  */
 export function openChatDialog(oView: any): void {
-  // Optional: If you have a controller property for messages, retrieve it.
   const oController = oView.getController();
   const aMessages = (oController as any)._chatMessages || [];
 
@@ -261,7 +260,7 @@ export function openChatDialog(oView: any): void {
       // Cleanup: destroy the dialog after close to avoid memory leaks
       oChatDialog.destroy();
     },
-  });
+  }).addStyleClass("sapUiContentPadding");
 
   // Add the dialog as a dependent of the view and open
   oView.addDependent(oChatDialog);
