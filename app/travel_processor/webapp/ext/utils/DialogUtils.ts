@@ -90,7 +90,7 @@ export function openHyperparametersDialog(oView: any): void {
       }),
     ],
     afterClose: () => oDialog.destroy(),
-  });
+  }).addStyleClass("sapUiContentPadding");
 
   oView.addDependent(oDialog);
   oDialog.open();
@@ -104,7 +104,22 @@ export function confirmReportDialog(oView: any): Promise<void> {
     const oDialog: Dialog = new Dialog({
       title: "Confirm Report",
       content: [
-        new Label({ text: "Are you sure you want to confirm this report?" }),
+        new VBox({
+          // Provide full width so margins look good
+          width: "100%",
+          items: [
+            new Label({
+              text: "Are you sure you want to confirm this report?",
+              textAlign: "Center",
+              width: "100%",
+            }),
+            new Label({
+              text: "This involves sending the selected data to an LLM.",
+              textAlign: "Center",
+              width: "100%",
+            }),
+          ],
+        }),
       ],
       buttons: [
         new Button({
@@ -123,7 +138,7 @@ export function confirmReportDialog(oView: any): Promise<void> {
         }),
       ],
       afterClose: () => oDialog.destroy(),
-    });
+    }).addStyleClass("sapUiContentPadding");
 
     oView.addDependent(oDialog);
     oDialog.open();
@@ -144,6 +159,8 @@ export function handleGeneratedReport(response: any): void {
 
   dialog = new Dialog({
     title: "Edit Report",
+    contentWidth: "800px",
+    contentHeight: "400px",
     content: [textArea],
     beginButton: new Button({
       text: "Save",
@@ -159,10 +176,12 @@ export function handleGeneratedReport(response: any): void {
     afterClose: () => dialog.destroy(),
   });
 
-  textArea.attachLiveChange((event) => {
-    const area = event.getSource() as TextArea;
-    dialog.data("editedData", area.getValue());
-  });
+  textArea
+    .attachLiveChange((event) => {
+      const area = event.getSource() as TextArea;
+      dialog.data("editedData", area.getValue());
+    })
+    .addStyleClass("sapUiContentPadding");
 
   dialog.open();
 }
