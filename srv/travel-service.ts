@@ -209,9 +209,6 @@ export class TravelService extends cds.ApplicationService {
           },
         });
 
-        console.log("Invoked LLM with the following parameters: ");
-        console.log(console.log(req.data));
-
         return response.getContent() as String;
       } catch (error) {
         console.error("Error during orchestration:", error);
