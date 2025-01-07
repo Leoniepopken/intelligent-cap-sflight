@@ -209,9 +209,14 @@ export class TravelService extends cds.ApplicationService {
           },
         });
 
+        console.log(response.getContent());
+
         return response.getContent() as String;
       } catch (error) {
-        console.error("Error during orchestration:", error);
+        console.log(error);
+        error.message =
+          "The communication with the LLM failed. Please try again.";
+        throw error;
       }
     });
 
