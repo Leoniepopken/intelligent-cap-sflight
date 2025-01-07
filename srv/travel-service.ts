@@ -154,19 +154,23 @@ export class TravelService extends cds.ApplicationService {
     });
 
     this.on("invokeLLM", async (req: any) => {
-      const rawContent = JSON.parse(req.data.content);
+      const { content, tone, maxTokens, temperature, template } = req.data;
+
+      const rawContent = JSON.parse(content);
+
+      if (Array.isArray(rawContent) && rawContent.length === 0) {
+        const error = new Error(
+          "No content provided. Please select at least one line for the report."
+        );
+        throw error;
+      }
+
       const filteredContent = filterContentFields(rawContent);
 
       const azureContentFilter = buildAzureContentFilter({
         Hate: 2,
         Violence: 2,
       });
-
-      const tone = req.data.tone;
-      const maxTokens = req.data.maxTokens;
-      const temperature = req.data.temperature;
-
-      const template = req.data.template;
 
       // Initialize OrchestrationClient
       const orchestrationClient = new OrchestrationClient({
