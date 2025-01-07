@@ -156,16 +156,19 @@ export class TravelService extends cds.ApplicationService {
     this.on("invokeLLM", async (req: any) => {
       const { content, tone, maxTokens, temperature, template } = req.data;
 
-      const rawContent = JSON.parse(content);
+      // Parsing the content to JSON is necessary for filterContentFields(). This check is only
+      // relevant for the report generation right now. Move all the checking to the frontend maybe
+      if (isJSON(content)) {
+        const rawContent = JSON.parse(content);
+        if (Array.isArray(rawContent) && rawContent.length === 0) {
+          const error = new Error(
+            "No content provided. Please select at least one line for the report."
+          );
+          throw error;
+        }
 
-      if (Array.isArray(rawContent) && rawContent.length === 0) {
-        const error = new Error(
-          "No content provided. Please select at least one line for the report."
-        );
-        throw error;
+        const filteredContent = filterContentFields(rawContent);
       }
-
-      const filteredContent = filterContentFields(rawContent);
 
       const azureContentFilter = buildAzureContentFilter({
         Hate: 2,
@@ -204,7 +207,7 @@ export class TravelService extends cds.ApplicationService {
       try {
         const response = await orchestrationClient.chatCompletion({
           inputParams: {
-            filteredContent: JSON.stringify(filteredContent),
+            content: content,
             tone: tone,
           },
         });
@@ -234,6 +237,19 @@ export class TravelService extends cds.ApplicationService {
         TotalPrice: item.TotalPrice,
         TravelStatus_code: item.TravelStatus_code,
       }));
+    }
+
+    // Utility Function to Validate JSON String
+    function isJSON(content) {
+      if (typeof content !== "string") {
+        return false;
+      }
+      try {
+        JSON.parse(content);
+        return true;
+      } catch (e) {
+        return false;
+      }
     }
 
     // Add base class's handlers. Handlers registered above go first.

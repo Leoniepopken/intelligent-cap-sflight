@@ -202,16 +202,18 @@ export function openChatDialog(oView: any): void {
   const oSendButton = new Button({
     text: "Send",
     type: "Emphasized",
-    press: () => {
+    press: async () => {
       const sText = oUserInput.getValue();
       if (!sText) {
         MessageToast.show("Please enter a message.");
         return;
       }
 
-      console.log("Sending message:", sText);
-
-      console.log(oView);
+      const response = await invokeLLMAction(
+        oView,
+        "Translate this text into a invented language: {{?content}} {{?tone}}",
+        sText
+      );
 
       // 1. Add user message to the list (client-side)
 
@@ -251,4 +253,20 @@ export function openChatDialog(oView: any): void {
   // Add the dialog as a dependent of the view and open
   oView.addDependent(oChatDialog);
   oChatDialog.open();
+}
+
+function collectSelectedContent(oView: any) {
+  const oController = oView.getController();
+  const oEditFlow = oController.getExtensionAPI().editFlow;
+
+  const contextsSelected = oEditFlow
+    .getView()
+    .byId(
+      "sap.fe.cap.travel::TravelList--fe::table::Travel::LineItem-innerTable"
+    )
+    .getSelectedContexts();
+
+  const content = contextsSelected.map((context: any) => context.getObject());
+
+  return content;
 }

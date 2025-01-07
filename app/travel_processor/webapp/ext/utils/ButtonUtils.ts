@@ -51,7 +51,7 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
   });
 
   const template = `You are a travel planner. Tone: {{?tone}}
-              Generate a report based on the following content: {{?filteredContent}}. 
+              Generate a report based on the following content: {{?content}}. 
               An travel status of X means canceled, A means accepted, O means open.
               The report should be of the following form:
               - The total number of travels
