@@ -53,22 +53,3 @@ export async function invokeLLMAction(
     console.log("User canceled or an error occurred:", err);
   }
 }
-
-/**
- * Helper function to collect the selected content.
- */
-function collectSelectedContent(oView: any) {
-  const oController = oView.getController();
-  const oEditFlow = oController.getExtensionAPI().editFlow;
-
-  const contextsSelected = oEditFlow
-    .getView()
-    .byId(
-      "sap.fe.cap.travel::TravelList--fe::table::Travel::LineItem-innerTable"
-    )
-    .getSelectedContexts();
-
-  const content = contextsSelected.map((context: any) => context.getObject());
-
-  return content;
-}
