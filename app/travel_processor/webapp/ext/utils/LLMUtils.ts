@@ -1,5 +1,3 @@
-import { confirmReportDialog, handleGeneratedReport } from "./DialogUtils";
-
 /**
  * Helper function to invoke the report backend action.
  */
@@ -8,9 +6,6 @@ export async function invokeLLMAction(
   template: String
 ): Promise<void> {
   try {
-    // 1) Ask for confirmation
-    await confirmReportDialog(oView);
-
     // 2) Only if user confirmed, invoke the report action
     const oController = oView.getController();
     const oEditFlow = oController.getExtensionAPI().editFlow;
@@ -47,9 +42,6 @@ export async function invokeLLMAction(
         skipParameterDialog: true,
       }
     );
-
-    // 3) Open your 'handleGeneratedReport' dialog afterwards
-    handleGeneratedReport(response.value);
 
     return response.value;
   } catch (err) {

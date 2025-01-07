@@ -4,7 +4,11 @@ import MenuItem from "sap/m/MenuItem";
 import { openHyperparametersDialog } from "./DialogUtils";
 import MenuButton from "sap/m/MenuButton";
 import { invokeLLMAction } from "./LLMUtils";
-import { openChatDialog } from "./DialogUtils";
+import {
+  openChatDialog,
+  confirmReportDialog,
+  handleGeneratedReport,
+} from "./DialogUtils";
 
 export function createFloatingChatButton(oView: any): Button {
   // Create the button
@@ -62,9 +66,10 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
     menu: oMenu.addStyleClass("customMenu"),
     buttonMode: "Split",
     useDefaultActionOnly: true,
-    defaultAction: () => {
-      console.log("MenuButton default action triggered!");
-      invokeLLMAction(oView, template);
+    defaultAction: async () => {
+      await confirmReportDialog(oView);
+      const response = await invokeLLMAction(oView, template);
+      handleGeneratedReport(response);
     },
   });
 
