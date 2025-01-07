@@ -68,7 +68,11 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
     useDefaultActionOnly: true,
     defaultAction: async () => {
       await confirmReportDialog(oView);
-      const response = await invokeLLMAction(oView, template);
+      const response = await invokeLLMAction(
+        oView,
+        template,
+        JSON.stringify(collectSelectedContent(oView))
+      );
       handleGeneratedReport(response);
     },
   });
@@ -80,4 +84,23 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
     oMenuButton,
     /* bSuppressInvalidate = */ true
   );
+}
+
+/**
+ * Helper function to collect the selected content.
+ */
+function collectSelectedContent(oView: any) {
+  const oController = oView.getController();
+  const oEditFlow = oController.editFlow;
+
+  const contextsSelected = oEditFlow
+    .getView()
+    .byId(
+      "sap.fe.cap.travel::TravelList--fe::table::Travel::LineItem-innerTable"
+    )
+    .getSelectedContexts();
+
+  const content = contextsSelected.map((context: any) => context.getObject());
+
+  return content;
 }

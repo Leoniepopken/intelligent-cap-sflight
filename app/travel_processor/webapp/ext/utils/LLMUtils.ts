@@ -1,12 +1,15 @@
 /**
  * Helper function to invoke the report backend action.
+ * @param {sap.ui.core.mvc.View} oView - The current view.
+ * @param {string} template - The template to use for the report.
+ * @param {any} additionalContent - The additional content to include in the LLM call.
  */
 export async function invokeLLMAction(
   oView: any,
-  template: String
+  template: String,
+  additionalContent?: any
 ): Promise<void> {
   try {
-    // 2) Only if user confirmed, invoke the report action
     const oController = oView.getController();
     const oEditFlow = oController.getExtensionAPI().editFlow;
 
@@ -23,7 +26,7 @@ export async function invokeLLMAction(
         parameterValues: [
           {
             name: "content",
-            value: JSON.stringify(collectSelectedContent(oView)),
+            value: additionalContent,
           },
           {
             name: "tone",
