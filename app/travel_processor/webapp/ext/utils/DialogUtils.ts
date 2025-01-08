@@ -14,6 +14,7 @@ import JSONModel from "sap/ui/model/json/JSONModel";
 import List from "sap/m/List";
 import StandardListItem from "sap/m/StandardListItem";
 import ScrollContainer from "sap/m/ScrollContainer";
+import HBox from "sap/m/HBox";
 
 /**
  * Opens the hyperparameters configuration dialog.
@@ -206,6 +207,7 @@ export function openChatDialog(oView: any): void {
       template: new StandardListItem({
         title: "{sender}",
         description: "{text}",
+        wrapping: true, // Allows multiline text
       }),
     },
     // Make the list scrollable
@@ -218,7 +220,7 @@ export function openChatDialog(oView: any): void {
   // Create a ScrollContainer to hold the message list
   const oScrollContainer = new ScrollContainer({
     content: [oMessageList],
-    height: "300px", // Adjust height as needed
+    height: "auto", // Adjust height dynamically
     vertical: true,
     horizontal: false,
   }).addStyleClass("sapUiSmallMarginBottom");
@@ -295,20 +297,27 @@ export function openChatDialog(oView: any): void {
   });
 
   // Put the Input and Send button on a single line
-  const oUserInputLayout = new VBox({
-    items: [new VBox({ items: [oUserInput], width: "80%" }), oSendButton],
+  const oUserInputLayout = new HBox({
+    items: [oUserInput, oSendButton],
     alignItems: "Center",
+    justifyContent: "SpaceBetween",
     width: "100%",
-  }).addStyleClass("sapUiSmallMarginTop");
+  }).addStyleClass("sapUiSmallMarginTop sapUiTinyMarginBottom");
 
   // Create the dialog
   const oChatDialog: Dialog = new Dialog({
     title: "AI Chat",
     contentWidth: "500px",
-    contentHeight: "500px", // Increased height to accommodate message list
+    contentHeight: "500px",
     horizontalScrolling: false,
     verticalScrolling: false, // Managed by ScrollContainer
-    content: [oScrollContainer, oUserInputLayout],
+    content: [
+      new VBox({
+        items: [oScrollContainer, oUserInputLayout],
+        height: "100%",
+        renderType: "Bare",
+      }),
+    ],
     buttons: [
       new Button({
         text: "Close",
@@ -316,7 +325,6 @@ export function openChatDialog(oView: any): void {
       }),
     ],
     afterClose: () => {
-      // Cleanup: destroy the dialog after close to avoid memory leaks
       oChatDialog.destroy();
     },
   }).addStyleClass("sapUiContentPadding");
