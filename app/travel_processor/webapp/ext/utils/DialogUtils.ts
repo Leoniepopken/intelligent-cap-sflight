@@ -254,19 +254,3 @@ export function openChatDialog(oView: any): void {
   oView.addDependent(oChatDialog);
   oChatDialog.open();
 }
-
-function collectSelectedContent(oView: any) {
-  const oController = oView.getController();
-  const oEditFlow = oController.getExtensionAPI().editFlow;
-
-  const contextsSelected = oEditFlow
-    .getView()
-    .byId(
-      "sap.fe.cap.travel::TravelList--fe::table::Travel::LineItem-innerTable"
-    )
-    .getSelectedContexts();
-
-  const content = contextsSelected.map((context: any) => context.getObject());
-
-  return content;
-}
