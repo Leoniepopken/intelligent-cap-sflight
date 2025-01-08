@@ -3,7 +3,7 @@ import Menu from "sap/m/Menu";
 import MenuItem from "sap/m/MenuItem";
 import { openHyperparametersDialog } from "./DialogUtils";
 import MenuButton from "sap/m/MenuButton";
-import { invokeLLMAction } from "./LLMUtils";
+import { performTask } from "./LLMUtils";
 import {
   openChatDialog,
   confirmReportDialog,
@@ -70,7 +70,7 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
     useDefaultActionOnly: true,
     defaultAction: async () => {
       await confirmReportDialog(oView);
-      const response = await invokeLLMAction(
+      const response = await performTask(
         oView,
         template,
         systemRole,

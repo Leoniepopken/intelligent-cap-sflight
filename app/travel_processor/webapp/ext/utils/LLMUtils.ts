@@ -5,7 +5,7 @@
  * @param {string} systemRole - The system role to use for the report. This is a description string!
  * @param {any} additionalContent - The additional content to include in the LLM call.
  */
-export async function invokeLLMAction(
+async function invokeLLMAction(
   oView: any,
   template: String,
   systemRole: String,

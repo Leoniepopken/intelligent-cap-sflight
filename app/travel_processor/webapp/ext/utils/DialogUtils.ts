@@ -9,7 +9,7 @@ import Button from "sap/m/Button";
 import TextArea from "sap/m/TextArea";
 import MessageToast from "sap/m/MessageToast";
 import VBox from "sap/m/VBox";
-import { invokeLLMAction } from "./LLMUtils";
+import { performTask } from "./LLMUtils";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import List from "sap/m/List";
 import StandardListItem from "sap/m/StandardListItem";
@@ -278,12 +278,7 @@ export function openChatDialog(oView: any): void {
         const template =
           "Translate this text into an invented language: {{?content}} Respond using this tone: {{?tone}}";
 
-        const sResponse = await invokeLLMAction(
-          oView,
-          template,
-          systemRole,
-          sText
-        );
+        const sResponse = await performTask(oView, template, systemRole, sText);
 
         // 4. Add LLM response to the list
         aMessages.push({
