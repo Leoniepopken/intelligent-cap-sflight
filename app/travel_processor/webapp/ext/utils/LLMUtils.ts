@@ -19,29 +19,39 @@ export async function invokeLLMAction(
     const tokens = hyperparams.maxTokens || 100;
     const temperature = hyperparams.temperature || 0.1;
 
+    const parameterValues: any[] = [
+      {
+        name: "tone",
+        value: tone,
+      },
+      {
+        name: "maxTokens",
+        value: tokens,
+      },
+      {
+        name: "temperature",
+        value: temperature,
+      },
+      {
+        name: "template",
+        value: template,
+      },
+      // Conditionally include 'content' if additionalContent is provided
+      ...(additionalContent !== undefined && additionalContent !== null
+        ? [
+            {
+              name: "content",
+              value: additionalContent,
+            },
+          ]
+        : []),
+    ];
+
     const response = await oEditFlow.invokeAction(
       "TravelService.EntityContainer/invokeLLM",
       {
         model: oEditFlow.getView().getModel(),
-        parameterValues: [
-          {
-            name: "content",
-            value: additionalContent,
-          },
-          {
-            name: "tone",
-            value: tone,
-          },
-          {
-            name: "maxTokens",
-            value: tokens,
-          },
-          {
-            name: "temperature",
-            value: temperature,
-          },
-          { name: "template", value: template },
-        ],
+        parameterValues: parameterValues,
         skipParameterDialog: true,
       }
     );
