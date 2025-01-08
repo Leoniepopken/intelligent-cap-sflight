@@ -276,7 +276,7 @@ export function openChatDialog(oView: any): void {
         // 3. Call LLM service
         const systemRole = "You are a helpful assistant";
         const template =
-          "Translate this text into an invented language: {{?content}} {{?tone}}";
+          "Translate this text into an invented language: {{?content}} Respond using this tone: {{?tone}}";
 
         const sResponse = await invokeLLMAction(
           oView,
