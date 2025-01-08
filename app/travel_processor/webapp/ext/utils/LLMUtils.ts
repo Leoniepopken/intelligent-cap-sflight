@@ -73,7 +73,8 @@ async function invokeLLMAction(
 /* This function checks if the input request is supposed to be a query */
 async function isQuery(oView: any, content: any): Promise<Boolean> {
   const template = `You are given the following content: {{?content}}
-    The question is if the user is asking a question about certain data and if I have to transform this request into a query. 
+    The question is if the user is asking a question about certain data and if I have to transform this request 
+    into a query to be able to query the database. 
     Answer with one word only using true or false.
     Answer using this tone: {{?tone}}`;
   const systemRole = "You are an expert for SQl.";
@@ -89,6 +90,23 @@ async function isQuery(oView: any, content: any): Promise<Boolean> {
   } else {
     return false;
   }
+}
+
+async function transformToQuery(
+  oView: any,
+  content: any
+): Promise<String | undefined> {
+  const template = `You are given the following content: {{?content}}
+    Transform this request into a query to be able to query the database.
+    The query should have the following structure:
+    //TODO
+    Answer by giving me only the query, nothing more. 
+    Answer using this tone: {{?tone}}`;
+  const systemRole = "You are an expert for SQl.";
+
+  const query = await invokeLLMAction(oView, template, systemRole, content);
+
+  return query;
 }
 
 function isJSON(content: any) {
