@@ -102,3 +102,19 @@ function isJSON(content: any) {
     return false;
   }
 }
+
+/* This function routes the tasks. It checks what to do. */
+export async function performTask(
+  oView: any,
+  template: String,
+  systemRole: String,
+  content: any
+): Promise<String | undefined> {
+  try {
+    const isQueryResult = await isQuery(oView, content);
+    console.log("isQueryResult", isQueryResult);
+    return await invokeLLMAction(oView, template, systemRole, content);
+  } catch (err) {
+    console.log("An error occurred:", err);
+  }
+}
