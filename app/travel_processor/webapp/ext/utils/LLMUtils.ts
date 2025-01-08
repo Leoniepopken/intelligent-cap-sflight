@@ -61,8 +61,6 @@ export async function invokeLLMAction(
       }
     );
 
-    console.log("System role: " + systemRole);
-
     return response.value;
   } catch (err) {
     // This 'catch' is triggered if the user pressed "No" (rejected the promise),
