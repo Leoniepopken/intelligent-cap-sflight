@@ -2,6 +2,7 @@
  * Helper function to invoke the report backend action.
  * @param {sap.ui.core.mvc.View} oView - The current view.
  * @param {string} template - The template to use for the report.
+ * @param {string} systemRole - The system role to use for the report. This is a description string!
  * @param {any} additionalContent - The additional content to include in the LLM call.
  */
 export async function invokeLLMAction(
@@ -9,7 +10,7 @@ export async function invokeLLMAction(
   template: String,
   systemRole: String,
   additionalContent?: any
-): Promise<void> {
+): Promise<String | undefined> {
   try {
     const oController = oView.getController();
     const oEditFlow = oController.getExtensionAPI().editFlow;
@@ -66,5 +67,38 @@ export async function invokeLLMAction(
     // This 'catch' is triggered if the user pressed "No" (rejected the promise),
     // or if an error happened in the code above
     console.log("User canceled or an error occurred:", err);
+  }
+}
+
+/* This function checks if the input request is supposed to be a query */
+async function isQuery(oView: any, content: any): Promise<Boolean> {
+  const template = `You are given the following content: {{?content}}
+    The question is if the user is asking a question about certain data and if I have to transform this request into a query. 
+    Answer with one word only using true or false.
+    Answer using this tone: {{?tone}}`;
+  const systemRole = "You are an expert for SQl.";
+
+  if (isJSON(content)) {
+    return false;
+  }
+
+  const answer = await invokeLLMAction(oView, template, systemRole, content);
+
+  if (answer?.toLowerCase() === "true") {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function isJSON(content: any) {
+  if (typeof content !== "string") {
+    return false;
+  }
+  try {
+    JSON.parse(content);
+    return true;
+  } catch (e) {
+    return false;
   }
 }
