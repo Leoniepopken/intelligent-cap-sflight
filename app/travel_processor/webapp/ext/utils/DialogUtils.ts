@@ -10,6 +10,10 @@ import TextArea from "sap/m/TextArea";
 import MessageToast from "sap/m/MessageToast";
 import VBox from "sap/m/VBox";
 import { invokeLLMAction } from "./LLMUtils";
+import JSONModel from "sap/ui/model/json/JSONModel";
+import List from "sap/m/List";
+import StandardListItem from "sap/m/StandardListItem";
+import ScrollContainer from "sap/m/ScrollContainer";
 
 /**
  * Opens the hyperparameters configuration dialog.
@@ -190,7 +194,51 @@ export function openChatDialog(oView: any): void {
   const oController = oView.getController();
   const aMessages = (oController as any)._chatMessages || [];
 
-  // A UI element (List) to hold incoming/outgoing messages
+  // Initialize JSON model with existing messages
+  const oModel = new JSONModel({
+    messages: aMessages,
+  });
+
+  // Create a List to display messages
+  const oMessageList = new List({
+    items: {
+      path: "/messages",
+      template: new StandardListItem({
+        title: "{sender}",
+        description: "{text}",
+      }),
+    },
+    // Make the list scrollable
+    inset: false,
+  });
+
+  // Bind the model to the List
+  oMessageList.setModel(oModel);
+
+  // Create a ScrollContainer to hold the message list
+  const oScrollContainer = new ScrollContainer({
+    content: [oMessageList],
+    height: "300px", // Adjust height as needed
+    vertical: true,
+    horizontal: false,
+  }).addStyleClass("sapUiSmallMarginBottom");
+
+  // Function to scroll to the bottom of the ScrollContainer
+  const scrollToBottom = () => {
+    // Get the DOM reference of the ScrollContainer
+    const oDomRef = oScrollContainer.getDomRef();
+    if (oDomRef) {
+      // The ScrollContainer may contain a scrollable div inside
+      // Find the scrollable div and set its scrollTop
+      const oScrollableDiv = oDomRef.querySelector(".sapMScrCont");
+      if (oScrollableDiv) {
+        oScrollableDiv.scrollTop = oScrollableDiv.scrollHeight;
+      }
+    }
+  };
+
+  // Initial scroll to bottom in case there are pre-existing messages
+  oScrollContainer.attachBrowserEvent("onAfterRendering", scrollToBottom);
 
   // A simple Input field where the user can type a new message
   const oUserInput = new Input("chatInput", {
@@ -203,30 +251,53 @@ export function openChatDialog(oView: any): void {
     text: "Send",
     type: "Emphasized",
     press: async () => {
-      const sText = oUserInput.getValue();
+      const sText = oUserInput.getValue().trim();
       if (!sText) {
         MessageToast.show("Please enter a message.");
         return;
       }
 
-      const response = await invokeLLMAction(
-        oView,
-        "Translate this text into a invented language: {{?content}} {{?tone}}",
-        sText
-      );
-
       // 1. Add user message to the list (client-side)
+      aMessages.push({
+        sender: "You",
+        text: sText,
+      });
+      oModel.refresh(); // Update the model to reflect changes
+
+      // Scroll to the bottom to show the latest message
+      scrollToBottom();
 
       // 2. Clear input
       oUserInput.setValue("");
 
-      // 3. Call LLM service
+      try {
+        // 3. Call LLM service
+        const sResponse = await invokeLLMAction(
+          oView,
+          "Translate this text into an invented language: {{?content}} {{?tone}}",
+          sText
+        );
+
+        // 4. Add LLM response to the list
+        aMessages.push({
+          sender: "AI",
+          text: sResponse,
+        });
+        oModel.refresh(); // Update the model to reflect changes
+
+        // Scroll to the bottom to show the latest message
+        scrollToBottom();
+      } catch (error) {
+        MessageToast.show("Failed to get response from AI.");
+        console.error(error);
+      }
     },
   });
 
   // Put the Input and Send button on a single line
   const oUserInputLayout = new VBox({
-    items: [oUserInput, oSendButton],
+    items: [new VBox({ items: [oUserInput], width: "80%" }), oSendButton],
+    alignItems: "Center",
     width: "100%",
   }).addStyleClass("sapUiSmallMarginTop");
 
@@ -234,10 +305,10 @@ export function openChatDialog(oView: any): void {
   const oChatDialog: Dialog = new Dialog({
     title: "AI Chat",
     contentWidth: "500px",
-    contentHeight: "400px",
-    horizontalScrolling: true,
-    verticalScrolling: true,
-    content: [oUserInputLayout],
+    contentHeight: "500px", // Increased height to accommodate message list
+    horizontalScrolling: false,
+    verticalScrolling: false, // Managed by ScrollContainer
+    content: [oScrollContainer, oUserInputLayout],
     buttons: [
       new Button({
         text: "Close",
