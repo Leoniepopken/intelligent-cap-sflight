@@ -154,7 +154,8 @@ export class TravelService extends cds.ApplicationService {
     });
 
     this.on("invokeLLM", async (req: any) => {
-      const { content, tone, maxTokens, temperature, template } = req.data;
+      const { content, tone, maxTokens, temperature, template, systemRole } =
+        req.data;
 
       // Parsing the content to JSON is necessary for filterContentFields(). This check is only
       // relevant for the report generation right now. Move all the checking to the frontend maybe
@@ -183,6 +184,7 @@ export class TravelService extends cds.ApplicationService {
         },
         templating: {
           template: [
+            { role: "system", content: systemRole },
             {
               role: "user",
               content: template,

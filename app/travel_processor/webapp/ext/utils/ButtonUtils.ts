@@ -60,6 +60,8 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
               - The total number of rejected travels
               `;
 
+  const systemRole = "You are a travel planner";
+
   // Create a new MenuButton which mimics the original button’s properties
   const oMenuButton = new MenuButton({
     text: oButton.getText(),
@@ -71,6 +73,7 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
       const response = await invokeLLMAction(
         oView,
         template,
+        systemRole,
         JSON.stringify(collectSelectedContent(oView))
       );
       handleGeneratedReport(response);

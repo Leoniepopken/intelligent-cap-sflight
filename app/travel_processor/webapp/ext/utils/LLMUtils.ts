@@ -7,6 +7,7 @@
 export async function invokeLLMAction(
   oView: any,
   template: String,
+  systemRole: String,
   additionalContent?: any
 ): Promise<void> {
   try {
@@ -20,6 +21,10 @@ export async function invokeLLMAction(
     const temperature = hyperparams.temperature || 0.1;
 
     const parameterValues: any[] = [
+      {
+        name: "systemRole",
+        value: systemRole || "You are a helpful assistent",
+      },
       {
         name: "tone",
         value: tone,
@@ -55,6 +60,8 @@ export async function invokeLLMAction(
         skipParameterDialog: true,
       }
     );
+
+    console.log("System role: " + systemRole);
 
     return response.value;
   } catch (err) {
