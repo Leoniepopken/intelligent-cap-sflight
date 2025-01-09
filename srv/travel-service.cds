@@ -15,7 +15,17 @@ service TravelService @(path:'/processor') {
     action deductDiscount( percent: Percentage not null ) returns Travel;
   };
 
-  action invokeLLM(content: String @Core.OptionalParameter : { $Type : 'Core.OptionalParameterType'}, tone : String, maxTokens: Integer, temperature: Double, template: String, systemRole: String) returns String;
+  action invokeLLM(
+    content: String @Core.OptionalParameter : { $Type : 'Core.OptionalParameterType'}, 
+    tone : String, 
+    maxTokens: Integer, 
+    temperature: Double, 
+    template: String, 
+    systemRole: String
+  ) returns String;
+
+  action executeQuery(query : String) returns String;
+
 }
 
 type Percentage : Integer @assert.range: [1,100];

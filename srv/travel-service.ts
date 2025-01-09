@@ -225,6 +225,21 @@ export class TravelService extends cds.ApplicationService {
       }
     });
 
+    this.on("executeQuery", async (req: any) => {
+      try {
+        const results = await SELECT.one
+          .from(Travel)
+          .where(`TravelStatus = 'A'`);
+        console.log(results);
+        return results;
+      } catch (error) {
+        console.log(error);
+        error.message =
+          "Failed to execute query. Please check the query and try again.";
+        throw error;
+      }
+    });
+
     /**
      * Helper function for filtering content fields, such that token limit is not exceeded.
      * @param {Array} rawContent - An array of travel objects
