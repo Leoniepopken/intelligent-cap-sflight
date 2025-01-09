@@ -1,3 +1,5 @@
+import { invokeQueryAction } from "./QueryUtils";
+
 /**
  * Helper function to invoke the report backend action.
  * @param {sap.ui.core.mvc.View} oView - The current view.
@@ -74,10 +76,23 @@ async function invokeLLMAction(
 async function isQuery(oView: any, content: any): Promise<Boolean> {
   const template = `You are given the following content: {{?content}}
     The question is if the user is asking a question about certain data and if I have to transform this request 
-    into a query to be able to query the database. 
+    into a query to be able to query the database.
+    
+    Examples for when to answer with true:
+    - "Which travels are starting before may 2024?"
+    - "How many flights are accepted?"
+    - "Which travel was last changed by Leonie?"
+    - "To which location is the travel of Leonie going?"
+    - "Is the Vaction of Leonie already paied?"
+    - "How long until the next travel of Leonie?"
+
+    Examples for when to answer with false:
+    - "How can I book a flight?"
+    - "Is the agency trustworthy?"
+
     Answer with one word only using true or false.
     Answer using this tone: {{?tone}}`;
-  const systemRole = "You are an expert for SQl.";
+  const systemRole = "You are an data expert.";
 
   if (isJSON(content)) {
     return false;
@@ -244,6 +259,8 @@ export async function performTask(
     if (isQueryResult) {
       const query = await transformToQuery(oView, content);
       console.log("Query: " + query);
+      const queryResult = await invokeQueryAction(oView);
+      console.log(queryResult);
     }
 
     return await invokeLLMAction(oView, template, systemRole, content);
