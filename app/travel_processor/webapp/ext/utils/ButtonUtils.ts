@@ -1,13 +1,13 @@
 import Button from "sap/m/Button";
 import Menu from "sap/m/Menu";
 import MenuItem from "sap/m/MenuItem";
-import { openHyperparametersDialog } from "./DialogUtils";
 import MenuButton from "sap/m/MenuButton";
 import { performTask } from "./LLMUtils";
 import {
   openChatDialog,
   confirmReportDialog,
   handleGeneratedReport,
+  openHyperparametersDialog,
 } from "./DialogUtils";
 
 export function createFloatingChatButton(oView: any): Button {
