@@ -111,9 +111,9 @@ async function transformToQuery(
   oView: any,
   content: any
 ): Promise<String | undefined> {
-  const template = `You are given the following content: {{?content}}
-    Transform this request into a query to be able to query the database.
-    The data is stored in a SAP Hana database with the following schema.cds:
+  const template = `You are given the following request: {{?content}}
+    Transform this request into a query to be able to query the oData service of my application.
+    This is my schema.cds:
 
     using { Currency, custom.managed, sap.common.CodeList } from './common';
     using {
@@ -219,11 +219,18 @@ async function transformToQuery(
       response : LargeString;
     }
 
-    Build the query using the modlule cds.ql. Here is an example (unrelated to the provided schema.cds) how to construct such as query:
+    Build the query using the SAP Query Notation. Here are some examples how to construct such a query:
     
-    let q = SELECT.from('Books').where({ID:201}).orderBy({title:1})
+    SELECT.from(Travel).where("TravelStatus = 'A'");
+    SELECT(['title', 'price']).from('Books').where("genre = 'Fiction'");
+    SELECT.from('Orders').join('Books').on('Orders.book_id = Books.id').where('Books.author'= 'Jane Doe' );
+    SELECT.from('Books').orderBy('price', 'desc');
+    SELECT.from('Books').limit(10).offset(20);
 
     Answer by giving me only the query, nothing more. Only give one answer.
+
+    This is a valid answer: SELECT.from(Travel).where("TravelStatus = 'A'")
+
     Answer using this tone: {{?tone}}`;
   const systemRole = "You are an expert for SQl.";
 
