@@ -266,7 +266,7 @@ export async function performTask(
     if (isQueryResult) {
       const query = await transformToQuery(oView, content);
       console.log("Query: " + query);
-      const queryResult = await invokeQueryAction(oView);
+      const queryResult = await invokeQueryAction(oView, query);
       console.log(queryResult);
     }
 

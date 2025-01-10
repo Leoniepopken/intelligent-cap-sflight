@@ -1,4 +1,4 @@
-export async function invokeQueryAction(oView: any, query?: String) {
+export async function invokeQueryAction(oView: any, query: any) {
   try {
     const oController = oView.getController();
     const oEditFlow = oController.getExtensionAPI().editFlow;
@@ -7,7 +7,12 @@ export async function invokeQueryAction(oView: any, query?: String) {
       "TravelService.EntityContainer/executeQuery",
       {
         model: oEditFlow.getView().getModel(),
-        // TODO: use query parameter from input
+        parameterValues: [
+          {
+            name: "query",
+            value: query,
+          },
+        ],
         skipParameterDialog: true,
       }
     );
