@@ -115,123 +115,193 @@ async function transformToQuery(
     Transform this request into a query to be able to query the oData service of my application.
     This is my schema.cds:
 
-    using { Currency, custom.managed, sap.common.CodeList } from './common';
-    using {
-      sap.fe.cap.travel.Airline,
-      sap.fe.cap.travel.Passenger,
-      sap.fe.cap.travel.TravelAgency,
-      sap.fe.cap.travel.Supplement,
-      sap.fe.cap.travel.Flight
-    } from './master-data';
+    These are my tables:
 
-    namespace sap.fe.cap.travel;
+    [
+      { name: 'sap_fe_cap_travel_Airline' },
+      { name: 'sap_fe_cap_travel_Airport' },
+      { name: 'sap_fe_cap_travel_Supplement' },
+      { name: 'sap_fe_cap_travel_Flight' },
+      { name: 'sap_fe_cap_travel_FlightConnection' },
+      { name: 'sap_fe_cap_travel_Passenger' },
+      { name: 'sap_fe_cap_travel_TravelAgency' },
+      { name: 'sap_fe_cap_travel_SupplementType' },
+      { name: 'sap_fe_cap_travel_Travel' },
+      { name: 'sap_fe_cap_travel_Booking' },
+      { name: 'sap_fe_cap_travel_BookingSupplement' },
+      { name: 'sap_fe_cap_travel_BookingStatus' },
+      { name: 'sap_fe_cap_travel_TravelStatus' },
+      { name: 'sap_common_Countries' },
+      { name: 'sap_common_Currencies' },
+      { name: 'sap_fe_cap_travel_Supplement_texts' },
+      { name: 'sap_fe_cap_travel_SupplementType_texts' },
+      { name: 'sap_fe_cap_travel_BookingStatus_texts' },
+      { name: 'sap_fe_cap_travel_TravelStatus_texts' },
+      { name: 'sap_common_Countries_texts' },
+      { name: 'sap_common_Currencies_texts' },
+      { name: 'DRAFT_DraftAdministrativeData' },
+      { name: 'TravelService_Travel_drafts' },
+      { name: 'TravelService_Booking_drafts' },
+      { name: 'TravelService_BookingSupplement_drafts' }
+    ]
 
-    entity Travel : managed {
-      key TravelUUID : UUID;
-      TravelID       : Integer default 0 @readonly;
-      BeginDate      : Date @mandatory;
-      EndDate        : Date @mandatory;
-      BookingFee     : Decimal(16,3) default 0;
-      TotalPrice     : Decimal(16,3) @readonly;
-      CurrencyCode   : Currency default 'EUR';
-      Description    : String(1024);
-      TravelStatus   : Association to TravelStatus default 'O' @readonly;
-      to_Agency      : Association to TravelAgency @mandatory;
-      to_Customer    : Association to Passenger @mandatory;
-      to_Booking     : Composition of many Booking on to_Booking.to_Travel = $self;
-    };
+    These are the columns of my Travel table:
 
-    annotate Travel with @Capabilities.FilterRestrictions.FilterExpressionRestrictions: [
-      { Property: 'BeginDate', AllowedExpressions : 'SingleRange' },
-      { Property: 'EndDate', AllowedExpressions : 'SingleRange' }
-    ];
+    [
+      {
+        cid: 0,
+        name: 'createdAt',
+        type: 'TIMESTAMP_TEXT',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 1,
+        name: 'createdBy',
+        type: 'NVARCHAR(255)',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 2,
+        name: 'LastChangedAt',
+        type: 'TIMESTAMP_TEXT',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 3,
+        name: 'LastChangedBy',
+        type: 'NVARCHAR(255)',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 4,
+        name: 'TravelUUID',
+        type: 'NVARCHAR(36)',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 5,
+        name: 'TravelID',
+        type: 'INTEGER',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 6,
+        name: 'BeginDate',
+        type: 'DATE_TEXT',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 7,
+        name: 'EndDate',
+        type: 'DATE_TEXT',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 8,
+        name: 'BookingFee',
+        type: 'DECIMAL(16, 3)',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 9,
+        name: 'TotalPrice',
+        type: 'DECIMAL(16, 3)',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 10,
+        name: 'CurrencyCode_code',
+        type: 'NVARCHAR(3)',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 11,
+        name: 'Description',
+        type: 'NVARCHAR(1024)',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 12,
+        name: 'TravelStatus_code',
+        type: 'NVARCHAR(1)',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 13,
+        name: 'to_Agency_AgencyID',
+        type: 'NVARCHAR(6)',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 14,
+        name: 'to_Customer_CustomerID',
+        type: 'NVARCHAR(6)',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 15,
+        name: 'GoGreen',
+        type: 'BOOLEAN',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 16,
+        name: 'GreenFee',
+        type: 'DECIMAL(16, 3)',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      },
+      {
+        cid: 17,
+        name: 'TreesPlanted',
+        type: 'INTEGER',
+        notnull: 0,
+        dflt_value: null,
+        pk: 0
+      }
+    ]
 
+    Answer by giving me only the raw query as plain text, without using code blocks, formatting, or additional explanations. 
+    Only provide one answer.
 
-    entity Booking : managed {
-      key BookingUUID   : UUID;
-      BookingID         : Integer @Core.Computed;
-      BookingDate       : Date;
-      ConnectionID      : String(4) @mandatory;
-      FlightDate        : Date @mandatory;
-      FlightPrice       : Decimal(16,3) @mandatory;
-      CurrencyCode      : Currency;
-      BookingStatus     : Association to BookingStatus default 'N' @mandatory;
-      to_BookSupplement : Composition of many BookingSupplement on to_BookSupplement.to_Booking = $self;
-      to_Carrier        : Association to Airline @mandatory;
-      to_Customer       : Association to Passenger @mandatory;
-      to_Travel         : Association to Travel;
-      to_Flight         : Association to Flight on  to_Flight.AirlineID = to_Carrier.AirlineID
-                                                and to_Flight.FlightDate = FlightDate
-                                                and to_Flight.ConnectionID = ConnectionID;
-    };
-
-    entity BookingSupplement : managed {
-      key BookSupplUUID   : UUID;
-      BookingSupplementID : Integer @Core.Computed;
-      Price               : Decimal(16,3) @mandatory;
-      CurrencyCode        : Currency;
-      to_Booking          : Association to Booking;
-      to_Travel           : Association to Travel;
-      to_Supplement       : Association to Supplement @mandatory;
-    };
-
-
-    //
-    //  Code Lists
-    //
-
-    type BookingStatusCode : String(1) enum {
-      New      = 'N';
-      Booked   = 'B';
-      Canceled = 'X';
-    };
-
-    entity BookingStatus : CodeList {
-      key code : BookingStatusCode
-    };
-
-    type TravelStatusCode : String(1) enum {
-      Open     = 'O';
-      Accepted = 'A';
-      Canceled = 'X';
-    };
-
-    entity TravelStatus : CodeList {
-      key code : TravelStatusCode;
-      // can't use UInt8 (which would automatically be mapped to Edm.Byte) because it's not supported on H2
-      fieldControl: Int16 @odata.Type:'Edm.Byte' enum {
-        Inapplicable = 0;
-        ReadOnly = 1;
-        Optional = 3;
-        Mandatory = 7;
-      };
-      createDeleteHidden: Boolean;
-      insertDeleteRestriction: Boolean; // = NOT createDeleteHidden
-    }
-
-    extend entity Travel with {
-      GoGreen        : Boolean default false;
-      GreenFee       : Decimal(16, 3) @Core.Computed @readonly;
-      TreesPlanted   : Integer @Core.Computed @readonly;  
-    };
-
-    type LLMResponse {
-      response : LargeString;
-    }
-
-    Build the query using the SAP Query Notation. Here are some examples how to construct such a query:
-    
-    SELECT.from(Travel).where("TravelStatus = 'A'");
-    SELECT(['title', 'price']).from('Books').where("genre = 'Fiction'");
-    SELECT.from('Orders').join('Books').on('Orders.book_id = Books.id').where('Books.author'= 'Jane Doe' );
-    SELECT.from('Books').orderBy('price', 'desc');
-    SELECT.from('Books').limit(10).offset(20);
-
-    Answer by giving me only the query, nothing more. Only give one answer.
-
-    This is a valid answer: SELECT.from(Travel).where("TravelStatus = 'A'")
+    This is a valid answer for the request 'Give me all travels with Travel Status accepted': 
+    SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A'
 
     Answer using this tone: {{?tone}}`;
+
   const systemRole = "You are an expert for SQl.";
 
   const query = await invokeLLMAction(oView, template, systemRole, content);
