@@ -324,29 +324,60 @@ function isJSON(content: any) {
 /* This function routes the tasks. It checks what to do. */
 export async function performTask(
   oView: any,
-  template: String,
-  systemRole: String,
+  template: string,
+  systemRole: string,
   content: any
-): Promise<String | undefined> {
+): Promise<string | undefined> {
   try {
-    const isQueryResult = await isQuery(oView, content);
+    let finalResponse = "";
 
-    console.log("isQueryResult: " + isQueryResult);
+    // 1. Check if the content is a query
+    const isQueryResult = await isQuery(oView, content);
+    console.log("isQueryResult:", isQueryResult);
+
+    let csvDownloadLink = "";
 
     if (isQueryResult) {
+      // 2. Transform the text into a SQL query
       const query = await transformToQuery(oView, content);
-      console.log("Query: " + query);
+      console.log("Query:", query);
 
+      // 3. Invoke the backend action to run the query
       const queryResult = await invokeQueryAction(oView, query);
-      console.log(queryResult);
+      console.log("QueryResult:", queryResult);
 
+      // 4. If we have rows, convert them to CSV and generate a data URL link
       if (Array.isArray(queryResult) && queryResult.length > 0) {
-        const csv = convertToCSV(queryResult);
-        downloadCSV(csv, "results.csv");
+        const csvContent = convertToCSV(queryResult);
+
+        // Build a data URI so that user can download via link
+        const csvDataUri =
+          "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+
+        // Build an HTML link for download
+        // Note: This will only appear as a clickable link if UI allows HTML rendering
+        csvDownloadLink = `<br><br><a href="${csvDataUri}" download="results.csv">Download CSV</a>`;
       }
     }
 
-    return await invokeLLMAction(oView, template, systemRole, content);
+    // 5. Call the LLM service to generate text
+    const llmResponse = await invokeLLMAction(
+      oView,
+      template,
+      systemRole,
+      content
+    );
+
+    // 6. Combine them into a final string:
+    //    LLM response plus optional CSV link
+    if (llmResponse) {
+      // e.g. "LLM says: ... <a ...>Download CSV</a>"
+      finalResponse = llmResponse + (csvDownloadLink ? csvDownloadLink : "");
+    } else {
+      finalResponse = "No response from LLM";
+    }
+
+    return finalResponse;
   } catch (err) {
     console.log("An error occurred:", err);
   }
