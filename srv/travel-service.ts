@@ -227,8 +227,8 @@ export class TravelService extends cds.ApplicationService {
 
     this.on("executeQuery", async (req: any) => {
       const { query } = req.data;
-      const testQuery = `SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A'`;
-      const getColumnNamesQuery = `PRAGMA table_info(TravelService_Travel);`;
+      // const testQuery = `SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A'`;
+      // const getColumnNamesQuery = `PRAGMA table_info(TravelService_Travel);`;
       try {
         const results = await cds.run(query);
         console.log(results);

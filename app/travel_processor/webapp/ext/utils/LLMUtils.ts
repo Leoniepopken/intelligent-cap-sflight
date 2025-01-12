@@ -336,12 +336,54 @@ export async function performTask(
     if (isQueryResult) {
       const query = await transformToQuery(oView, content);
       console.log("Query: " + query);
+
       const queryResult = await invokeQueryAction(oView, query);
       console.log(queryResult);
+
+      if (Array.isArray(queryResult) && queryResult.length > 0) {
+        const csv = convertToCSV(queryResult);
+        downloadCSV(csv, "results.csv");
+      }
     }
 
     return await invokeLLMAction(oView, template, systemRole, content);
   } catch (err) {
     console.log("An error occurred:", err);
   }
+}
+
+function convertToCSV(input: any) {
+  if (!input || !input.length) {
+    return "";
+  }
+
+  const headers = Object.keys(input[0]);
+  const csvRows = [headers.join(",")];
+
+  for (const row of input) {
+    const values = headers.map((header) => row[header]);
+    csvRows.push(values.join(","));
+  }
+
+  return csvRows.join("\n");
+}
+
+function downloadCSV(csvString: BlobPart, filename: string) {
+  // Create a Blob with the CSV content
+  const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+
+  // Create a link element
+  const link = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  link.style.visibility = "hidden";
+
+  // Append the link, trigger click, and remove
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  // (Optionally) Revoke the object URL
+  URL.revokeObjectURL(url);
 }
