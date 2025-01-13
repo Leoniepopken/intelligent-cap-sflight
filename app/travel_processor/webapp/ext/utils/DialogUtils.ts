@@ -300,8 +300,18 @@ export function openChatDialog(oView: any): void {
       // 2. Clear input
       oUserInput.setValue("");
 
+      // 3. Add a temporary "typing" indicator
+      const iTypingIndex =
+        aMessages.push({
+          sender: "AI",
+          // You can style this however you like:
+          text: "AI is typing...",
+        }) - 1; // keep track of this item’s index
+      oModel.refresh();
+      scrollToBottom();
+
       try {
-        // 3. Call LLM service
+        // 4. Call LLM service
         const systemRole = "You are a helpful assistant";
         const template = `You are given the following content: {{?content}}. Respond using this tone: {{?tone}}.
           
@@ -315,7 +325,10 @@ export function openChatDialog(oView: any): void {
 
         console.log("Response:", sResponse);
 
-        // 4. Add LLM response to the list
+        // Remove the temporary typing indicator
+        aMessages.splice(iTypingIndex, 1);
+
+        // 5. Add LLM response to the list
         aMessages.push({
           sender: "AI",
           text: sResponse,
