@@ -216,6 +216,22 @@ export function openChatDialog(oView: any): void {
               new FormattedText({
                 htmlText: "{text}",
               }).addStyleClass("sapUiSmallMarginTopBottom"),
+              new HBox({
+                items: [
+                  new Button({
+                    icon: "sap-icon://thumb-up",
+                    visible: "{= ${sender} === 'AI' }", // only show for AI
+                  }).addStyleClass(
+                    "sapUiTinyMarginBeginEnd sapUiTinyMarginBottom"
+                  ),
+                  new Button({
+                    icon: "sap-icon://thumb-down",
+                    visible: "{= ${sender} === 'AI' }",
+                  }).addStyleClass(
+                    "sapUiTinyMarginBeginEnd sapUiTinyMarginBottom"
+                  ),
+                ],
+              }).addStyleClass("sapUiTinyMarginTop"),
             ],
           }),
         ],
