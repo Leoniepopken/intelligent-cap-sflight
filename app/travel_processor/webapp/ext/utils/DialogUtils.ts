@@ -17,6 +17,7 @@ import HBox from "sap/m/HBox";
 import CustomListItem from "sap/m/CustomListItem";
 import FormattedText from "sap/m/FormattedText";
 import FlexItemData from "sap/m/FlexItemData";
+import { handleFeedback } from "./FeedbackUtils";
 
 /**
  * Opens the hyperparameters configuration dialog.
@@ -222,6 +223,14 @@ export function openChatDialog(oView: any): void {
                     icon: "sap-icon://thumb-up",
                     visible:
                       "{= ${sender} === 'AI' && ${text} !== 'AI is typing...' }", // only show for AI
+                    press: (oEvent) => {
+                      const oItem = (oEvent as any)
+                        .getSource()
+                        .getBindingContext()
+                        .getObject();
+                      // oItem holds the current list item data -> { sender: 'AI', text: '...' }
+                      handleFeedback("thumbs_up", oItem.text);
+                    },
                   }).addStyleClass(
                     "sapUiTinyMarginBeginEnd sapUiTinyMarginBottom"
                   ),
@@ -229,6 +238,13 @@ export function openChatDialog(oView: any): void {
                     icon: "sap-icon://thumb-down",
                     visible:
                       "{= ${sender} === 'AI' && ${text} !== 'AI is typing...' }",
+                    press: (oEvent) => {
+                      const oItem = (oEvent as any)
+                        .getSource()
+                        .getBindingContext()
+                        .getObject();
+                      handleFeedback("thumbs_down", oItem.text);
+                    },
                   }).addStyleClass(
                     "sapUiTinyMarginBeginEnd sapUiTinyMarginBottom"
                   ),
