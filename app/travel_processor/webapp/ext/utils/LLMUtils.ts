@@ -218,15 +218,17 @@ export async function performTask(
     console.log("isQueryResult:", isQueryResult);
 
     let csvDownloadLink = "";
+    let query: String | undefined;
+    let queryResult: any[] | undefined;
 
     if (isQueryResult) {
       // 2. Transform the text into a SQL query
-      const query = await transformToQuery(oView, content);
-      console.log("Query:", query);
+      query = await transformToQuery(oView, content);
+      console.log("Query: ", query);
 
       // 3. Invoke the backend action to run the query
-      const queryResult = await invokeQueryAction(oView, query);
-      console.log("QueryResult:", queryResult);
+      queryResult = await invokeQueryAction(oView, query);
+      console.log("QueryResult: ", queryResult);
 
       // 4. If we have rows, convert them to CSV and generate a data URL link
       if (Array.isArray(queryResult) && queryResult.length > 0) {
@@ -237,7 +239,7 @@ export async function performTask(
         });
         const csvUrl = URL.createObjectURL(csvBlob);
 
-        // Build an HTML link for download (object URL is shorter & more efficient than data URI)
+        // Build an HTML link for download
         csvDownloadLink = `<br><br><a href="${csvUrl}" download="results.csv">Download CSV</a>`;
       }
     }
@@ -250,13 +252,23 @@ export async function performTask(
       content
     );
 
-    // 6. Combine them into a final string:
-    //    LLM response plus optional CSV link
+    // 6. Handle the "no data found" scenario
+    if (isQueryResult && queryResult && queryResult.length === 0) {
+      // Override finalResponse if the query returned zero rows
+      finalResponse = "For this request I couldn't find any data";
+      return finalResponse;
+    }
+
+    // Otherwise, build the final response from the LLM’s text
     if (llmResponse) {
-      // e.g. "LLM says: ... <a ...>Download CSV</a>"
       finalResponse = llmResponse + (csvDownloadLink ? csvDownloadLink : "");
     } else {
       finalResponse = "No response from LLM";
+    }
+
+    // If this was a query, include the query text
+    if (isQueryResult && query) {
+      finalResponse += `<br><br>I used this query for querying the database: ${query}`;
     }
 
     return finalResponse;
