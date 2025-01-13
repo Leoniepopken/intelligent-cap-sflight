@@ -220,13 +220,15 @@ export function openChatDialog(oView: any): void {
                 items: [
                   new Button({
                     icon: "sap-icon://thumb-up",
-                    visible: "{= ${sender} === 'AI' }", // only show for AI
+                    visible:
+                      "{= ${sender} === 'AI' && ${text} !== 'AI is typing...' }", // only show for AI
                   }).addStyleClass(
                     "sapUiTinyMarginBeginEnd sapUiTinyMarginBottom"
                   ),
                   new Button({
                     icon: "sap-icon://thumb-down",
-                    visible: "{= ${sender} === 'AI' }",
+                    visible:
+                      "{= ${sender} === 'AI' && ${text} !== 'AI is typing...' }",
                   }).addStyleClass(
                     "sapUiTinyMarginBeginEnd sapUiTinyMarginBottom"
                   ),
