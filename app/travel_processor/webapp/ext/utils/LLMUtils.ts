@@ -117,7 +117,6 @@ async function transformToQuery(
 
     These are my tables:
 
-    [
       { name: 'sap_fe_cap_travel_Airline' },
       { name: 'sap_fe_cap_travel_Airport' },
       { name: 'sap_fe_cap_travel_Supplement' },
@@ -143,162 +142,45 @@ async function transformToQuery(
       { name: 'TravelService_Travel_drafts' },
       { name: 'TravelService_Booking_drafts' },
       { name: 'TravelService_BookingSupplement_drafts' }
-    ]
 
     These are the columns of my Travel table:
 
-    [
-      {
-        cid: 0,
-        name: 'createdAt',
-        type: 'TIMESTAMP_TEXT',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 1,
-        name: 'createdBy',
-        type: 'NVARCHAR(255)',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 2,
-        name: 'LastChangedAt',
-        type: 'TIMESTAMP_TEXT',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 3,
-        name: 'LastChangedBy',
-        type: 'NVARCHAR(255)',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 4,
-        name: 'TravelUUID',
-        type: 'NVARCHAR(36)',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 5,
-        name: 'TravelID',
-        type: 'INTEGER',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 6,
-        name: 'BeginDate',
-        type: 'DATE_TEXT',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 7,
-        name: 'EndDate',
-        type: 'DATE_TEXT',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 8,
-        name: 'BookingFee',
-        type: 'DECIMAL(16, 3)',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 9,
-        name: 'TotalPrice',
-        type: 'DECIMAL(16, 3)',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 10,
-        name: 'CurrencyCode_code',
-        type: 'NVARCHAR(3)',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 11,
-        name: 'Description',
-        type: 'NVARCHAR(1024)',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 12,
-        name: 'TravelStatus_code',
-        type: 'NVARCHAR(1)',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 13,
-        name: 'to_Agency_AgencyID',
-        type: 'NVARCHAR(6)',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 14,
-        name: 'to_Customer_CustomerID',
-        type: 'NVARCHAR(6)',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 15,
-        name: 'GoGreen',
-        type: 'BOOLEAN',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 16,
-        name: 'GreenFee',
-        type: 'DECIMAL(16, 3)',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      },
-      {
-        cid: 17,
-        name: 'TreesPlanted',
-        type: 'INTEGER',
-        notnull: 0,
-        dflt_value: null,
-        pk: 0
-      }
-    ]
+    createdAt, createdBy, LastChangedAt, LastChangedBy, TravelUUID, TravelID, BeginDate, EndDate, BookingFee, TotalPrice, CurrencyCode_code,
+    Description, TravelStatus_code, to_Agency_AgencyID, to_Customer_CustomerID, GoGreen, GreenFee, TreesPlanted
 
-    Answer by giving me only the raw query as plain text, without using code blocks, formatting, or additional explanations. 
+    These are the columns of my Booking table:
+
+    createdAt, createdBy, LastChangedAt, LastChangedBy, BookingUUID, BookingID, BookingDate, ConnectionID, FlightDate, FlightPrice, 
+    CurrencyCode_code, BookingStatus_code, to_Carrier_AirlineID, to_Customer_CustomerID, to_Travel_TravelUUID
+
+    Instruction: Answer by giving me only the raw query as plain text, without using code blocks, formatting, or additional explanations. 
     Only provide one answer.
 
-    This is a valid answer for the request 'Give me one travel with status accepted': 
-    SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A' LIMIT 1
+    Here are some examples:
+
+    Give me the latest travel with status accepted: 
+    SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A' ORDER BY createdAt DESC LIMIT 1
+
+    Find all travels with a booking fee below 100:
+    SELECT * FROM sap_fe_cap_travel_Travel WHERE BookingFee < 100;
+
+    Get the top 5 cheapest travels (by total price):
+    SELECT * FROM sap_fe_cap_travel_Travel ORDER BY TotalPrice ASC LIMIT 5;
+
+    Show travels that start after January 1, 2025:
+    SELECT * FROM sap_fe_cap_travel_Travel WHERE BeginDate > '2025-01-01';
+
+    Retrieve travels with a specific travel ID (e.g., 123):
+    SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelID = 123;
+
+    List all ‘GoGreen’ travels (environment-friendly):
+    SELECT * FROM sap_fe_cap_travel_Travel WHERE GoGreen = TRUE;
+
+    Get the most recent travel by creation date:
+    SELECT * FROM sap_fe_cap_travel_Travel ORDER BY createdAt DESC LIMIT 1;
+
+    Find travels with status accepted but total price exceeding 500:
+    SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A' AND TotalPrice > 500;
 
     Answer using this tone: {{?tone}}`;
 
