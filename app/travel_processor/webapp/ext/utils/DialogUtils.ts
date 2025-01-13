@@ -15,6 +15,9 @@ import List from "sap/m/List";
 import StandardListItem from "sap/m/StandardListItem";
 import ScrollContainer from "sap/m/ScrollContainer";
 import HBox from "sap/m/HBox";
+import CustomListItem from "sap/m/CustomListItem";
+import Format from "sap/viz/ui5/api/env/Format";
+import FormattedText from "sap/m/FormattedText";
 
 /**
  * Opens the hyperparameters configuration dialog.
@@ -204,10 +207,19 @@ export function openChatDialog(oView: any): void {
   const oMessageList = new List({
     items: {
       path: "/messages",
-      template: new StandardListItem({
-        title: "{sender}",
-        description: "{text}",
-        wrapping: true, // Allows multiline text
+      template: new CustomListItem({
+        content: [
+          new VBox({
+            items: [
+              new Label({
+                text: "{sender}",
+              }),
+              new FormattedText({
+                htmlText: "{text}",
+              }),
+            ],
+          }),
+        ],
       }),
     },
     // Make the list scrollable
@@ -279,6 +291,8 @@ export function openChatDialog(oView: any): void {
           "Translate this text into an invented language: {{?content}} Respond using this tone: {{?tone}}";
 
         const sResponse = await performTask(oView, template, systemRole, sText);
+
+        console.log("Response:", sResponse);
 
         // 4. Add LLM response to the list
         aMessages.push({
