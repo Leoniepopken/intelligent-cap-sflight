@@ -12,12 +12,11 @@ import VBox from "sap/m/VBox";
 import { performTask } from "./LLMUtils";
 import JSONModel from "sap/ui/model/json/JSONModel";
 import List from "sap/m/List";
-import StandardListItem from "sap/m/StandardListItem";
 import ScrollContainer from "sap/m/ScrollContainer";
 import HBox from "sap/m/HBox";
 import CustomListItem from "sap/m/CustomListItem";
-import Format from "sap/viz/ui5/api/env/Format";
 import FormattedText from "sap/m/FormattedText";
+import FlexItemData from "sap/m/FlexItemData";
 
 /**
  * Opens the hyperparameters configuration dialog.
@@ -213,10 +212,10 @@ export function openChatDialog(oView: any): void {
             items: [
               new Label({
                 text: "{sender}",
-              }),
+              }).addStyleClass("sapUiSmallMarginTop"),
               new FormattedText({
                 htmlText: "{text}",
-              }),
+              }).addStyleClass("sapUiSmallMarginTopBottom"),
             ],
           }),
         ],
@@ -232,9 +231,9 @@ export function openChatDialog(oView: any): void {
   // Create a ScrollContainer to hold the message list
   const oScrollContainer = new ScrollContainer({
     content: [oMessageList],
-    height: "auto", // Adjust height dynamically
     vertical: true,
     horizontal: false,
+    layoutData: new FlexItemData({ growFactor: 1 }),
   }).addStyleClass("sapUiSmallMarginBottom");
 
   // Function to scroll to the bottom of the ScrollContainer
@@ -256,8 +255,9 @@ export function openChatDialog(oView: any): void {
 
   // A simple Input field where the user can type a new message
   const oUserInput = new Input("chatInput", {
-    width: "80%",
+    width: "100%",
     placeholder: "Type your message here...",
+    layoutData: new FlexItemData({ growFactor: 0.9 }),
   });
 
   // Send button: triggers LLM call
