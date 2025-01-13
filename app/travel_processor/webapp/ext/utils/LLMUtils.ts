@@ -297,8 +297,8 @@ async function transformToQuery(
     Answer by giving me only the raw query as plain text, without using code blocks, formatting, or additional explanations. 
     Only provide one answer.
 
-    This is a valid answer for the request 'Give me all travels with Travel Status accepted': 
-    SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A'
+    This is a valid answer for the request 'Give me one travel with status accepted': 
+    SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A' LIMIT 1
 
     Answer using this tone: {{?tone}}`;
 
@@ -350,13 +350,13 @@ export async function performTask(
       if (Array.isArray(queryResult) && queryResult.length > 0) {
         const csvContent = convertToCSV(queryResult);
 
-        // Build a data URI so that user can download via link
-        const csvDataUri =
-          "data:text/csv;charset=utf-8," + encodeURIComponent(csvContent);
+        const csvBlob = new Blob([csvContent], {
+          type: "text/csv;charset=utf-8;",
+        });
+        const csvUrl = URL.createObjectURL(csvBlob);
 
-        // Build an HTML link for download
-        // Note: This will only appear as a clickable link if UI allows HTML rendering
-        csvDownloadLink = `<br><br><a href="${csvDataUri}" download="results.csv">Download CSV</a>`;
+        // Build an HTML link for download (object URL is shorter & more efficient than data URI)
+        csvDownloadLink = `<br><br><a href="${csvUrl}" download="results.csv">Download CSV</a>`;
       }
     }
 
