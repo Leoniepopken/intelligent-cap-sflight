@@ -90,7 +90,7 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
 }
 
 /**
- * Helper function to collect the selected content.
+ * Helper function to collect and filter the selected content.
  */
 function collectSelectedContent(oView: any) {
   const oController = oView.getController();
@@ -103,7 +103,21 @@ function collectSelectedContent(oView: any) {
     )
     .getSelectedContexts();
 
-  const content = contextsSelected.map((context: any) => context.getObject());
+  const unfilteredContent = contextsSelected.map((context: any) =>
+    context.getObject()
+  );
 
-  return content;
+  // Filter fields for each object in the array
+  const filteredContent = unfilteredContent.map((item: any) => ({
+    BeginDate: item.BeginDate,
+    BookingFee: item.BookingFee,
+    EndDate: item.EndDate,
+    Description: item.Description,
+    TravelStatus: item.TravelStatus,
+    TotalPrice: item.TotalPrice,
+    to_Agency: item.to_Agency?.Name,
+    to_Customer: item.to_Customer?.LastName,
+  }));
+
+  return filteredContent;
 }
