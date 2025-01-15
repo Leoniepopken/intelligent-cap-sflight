@@ -81,6 +81,7 @@ async function invokeLLMAction(
 
 /* This function checks if the input request is supposed to be a query */
 async function isQuery(oView: any, content: any): Promise<Boolean> {
+  // TODO: specify model to use
   const template = `You are given the following content: {{?content}}
     The question is if the user is asking a question about certain data and if I have to transform this request 
     into a query to be able to query the database.
@@ -118,6 +119,7 @@ async function transformToQuery(
   oView: any,
   content: any
 ): Promise<String | undefined> {
+  // TODO: specify model to use
   const template = `You are given the following request: {{?content}}
     Transform this request into a query to be able to query the oData service of my application.
     This is my schema.cds:
@@ -215,10 +217,12 @@ export async function performTask(
   oView: any,
   template: string,
   systemRole: string,
-  content: any
+  content: any,
+  modelName?: string
 ): Promise<string | undefined> {
   try {
     let finalResponse = "";
+    const model = modelName ?? "gpt-4o";
 
     // 1. Check if the content is a query
     const isQueryResult = await isQuery(oView, content);
@@ -256,7 +260,8 @@ export async function performTask(
       oView,
       template,
       systemRole,
-      content
+      content,
+      model
     );
 
     // 6. Handle the "no data found" scenario
