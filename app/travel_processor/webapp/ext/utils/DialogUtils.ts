@@ -339,7 +339,13 @@ export function openChatDialog(oView: any): void {
 
         // TODO: include other aswer options.
 
-        const sResponse = await performTask(oView, template, systemRole, sText);
+        const sResponse = await performTask(
+          oView,
+          template,
+          systemRole,
+          sText,
+          "gpt-35-turbo"
+        );
 
         console.log("Response:", sResponse);
 

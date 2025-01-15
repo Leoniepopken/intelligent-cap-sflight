@@ -74,7 +74,8 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
         oView,
         template,
         systemRole,
-        JSON.stringify(collectSelectedContent(oView))
+        JSON.stringify(collectSelectedContent(oView)),
+        "gpt-35-turbo"
       );
       handleGeneratedReport(response);
     },

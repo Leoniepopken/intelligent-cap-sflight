@@ -106,7 +106,13 @@ async function isQuery(oView: any, content: any): Promise<Boolean> {
     return false;
   }
 
-  const answer = await invokeLLMAction(oView, template, systemRole, content);
+  const answer = await invokeLLMAction(
+    oView,
+    template,
+    systemRole,
+    content,
+    "gpt-35-turbo"
+  );
 
   if (answer?.toLowerCase() === "true") {
     return true;
@@ -195,7 +201,13 @@ async function transformToQuery(
 
   const systemRole = "You are an expert for SQl.";
 
-  const query = await invokeLLMAction(oView, template, systemRole, content);
+  const query = await invokeLLMAction(
+    oView,
+    template,
+    systemRole,
+    content,
+    "gpt-4o-mini"
+  );
 
   return query;
 }
