@@ -52,7 +52,10 @@
   "cds": {
     "requires": {
       "db": {
-        "kind": "sql"
+        "kind": "hana",
+        "credentials": {
+          "service": "default-env"
+        }
       },
       "[production]": {
         "db": {
