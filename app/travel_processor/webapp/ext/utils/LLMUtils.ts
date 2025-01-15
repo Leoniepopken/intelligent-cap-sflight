@@ -11,7 +11,8 @@ async function invokeLLMAction(
   oView: any,
   template: String,
   systemRole: String,
-  additionalContent?: any
+  additionalContent?: any,
+  modelName?: String
 ): Promise<String | undefined> {
   try {
     const oController = oView.getController();
@@ -22,6 +23,8 @@ async function invokeLLMAction(
     const tone = hyperparams.tone || "";
     const tokens = hyperparams.maxTokens || 100;
     const temperature = hyperparams.temperature || 0.1;
+
+    const model = modelName ?? "gpt-4o"; // Use provided modelName or default
 
     const parameterValues: any[] = [
       {
@@ -43,6 +46,10 @@ async function invokeLLMAction(
       {
         name: "template",
         value: template,
+      },
+      {
+        name: "modelName", // Always include modelName with the final value
+        value: model,
       },
       // Conditionally include 'content' if additionalContent is provided
       ...(additionalContent !== undefined && additionalContent !== null

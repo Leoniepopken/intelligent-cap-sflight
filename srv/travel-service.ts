@@ -154,8 +154,15 @@ export class TravelService extends cds.ApplicationService {
     });
 
     this.on("invokeLLM", async (req: any) => {
-      const { content, tone, maxTokens, temperature, template, systemRole } =
-        req.data;
+      const {
+        content,
+        tone,
+        maxTokens,
+        temperature,
+        template,
+        systemRole,
+        model_name,
+      } = req.data;
 
       // Parsing the content to JSON is necessary for filterContentFields(). This check is only
       // relevant for the report generation right now. Move all the checking to the frontend maybe
@@ -179,6 +186,7 @@ export class TravelService extends cds.ApplicationService {
       // Initialize OrchestrationClient
       const orchestrationClient = new OrchestrationClient({
         llm: {
+          // TODO: make model_name interchangeable
           model_name: "gpt-4o",
           model_params: { max_tokens: maxTokens, temperature: temperature },
         },
