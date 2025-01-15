@@ -164,6 +164,8 @@ export class TravelService extends cds.ApplicationService {
         model_name,
       } = req.data;
 
+      const model = model_name ?? "gpt-4o";
+
       // Parsing the content to JSON is necessary for filterContentFields(). This check is only
       // relevant for the report generation right now. Move all the checking to the frontend maybe
       if (isJSON(content)) {
@@ -178,6 +180,8 @@ export class TravelService extends cds.ApplicationService {
         const filteredContent = filterContentFields(rawContent);
       }
 
+      //TODO: for some reaseon model_name is undefined here. Fix this.
+
       const azureContentFilter = buildAzureContentFilter({
         Hate: 2,
         Violence: 2,
@@ -187,7 +191,7 @@ export class TravelService extends cds.ApplicationService {
       const orchestrationClient = new OrchestrationClient({
         llm: {
           // TODO: make model_name interchangeable
-          model_name: "gpt-4o",
+          model_name: model,
           model_params: { max_tokens: maxTokens, temperature: temperature },
         },
         templating: {
@@ -213,6 +217,7 @@ export class TravelService extends cds.ApplicationService {
           ],
         },
       });
+
       // Request chat completion
       try {
         const response = await orchestrationClient.chatCompletion({
