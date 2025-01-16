@@ -82,24 +82,28 @@ async function invokeLLMAction(
 /* This function checks if the input request is supposed to be a query */
 async function isQuery(oView: any, content: any): Promise<Boolean> {
   // TODO: specify model to use
-  const template = `You are given the following content: {{?content}}
-    The question is if the user is asking a question about certain data and if I have to transform this request 
-    into a query to be able to query the database.
-    
-    Examples for when to answer with true:
-    - "Which travels are starting before may 2024?"
-    - "How many flights are accepted?"
-    - "Which travel was last changed by Leonie?"
-    - "To which location is the travel of Leonie going?"
-    - "Is the Vaction of Leonie already paied?"
-    - "How long until the next travel of Leonie?"
+  const template = `You are given the following content: {{?content}}  
+    Determine if the content is a **question** about specific data that needs to be transformed into a database query.  
 
-    Examples for when to answer with false:
-    - "How can I book a flight?"
-    - "Is the agency trustworthy?"
+    1. **Step 1: Identify if the content is a question.**  
+      - If the input contains structured data (e.g., JSON) without a question, the answer is false.  
+      - If the input starts with words like "Who," "What," "When," "Where," "Why," or "How," proceed to Step 2.  
 
-    Answer with one word only using true or false.
-    Answer using this tone: {{?tone}}`;
+    2. **Step 2: Evaluate if the question is about specific data.**  
+      - Questions requiring retrieval or transformation of specific data into a database query are true.  
+      - General or unrelated questions (e.g., "Is the agency trustworthy?") are false.  
+
+    **Examples:**  
+    - Content: "Which travels are starting before May 2024?" → true 
+    - Content: "How can I book a flight?" → false
+    - Content: JSON without a question → false  
+
+    **Guidelines:** 
+    - Answer with one word: true or false.  
+    - If unsure, err on the side of caution and select false.  
+    - Answer in the specified tone: {{?tone}}.  
+    `;
+
   const systemRole = "You are an data expert.";
 
   if (isJSON(content)) {
