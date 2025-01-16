@@ -131,76 +131,81 @@ async function transformToQuery(
   content: any
 ): Promise<String | undefined> {
   // TODO: specify model to use
-  const template = `You are given the following request: {{?content}}
-    Transform this request into a query to be able to query the oData service of my application.
-    This is my schema.cds:
+  const template = `**Task**
+    You are provided with the following request: {{?content}}.
+    Your objective is to transform this request into a query compatible with the OData service of my application.
 
-    These are my tables:
+    **Schema Information**
+    Below is the schema of my application, including table names and relevant columns:
 
-      { name: 'sap_fe_cap_travel_Airline' },
-      { name: 'sap_fe_cap_travel_Airport' },
-      { name: 'sap_fe_cap_travel_Supplement' },
-      { name: 'sap_fe_cap_travel_Flight' },
-      { name: 'sap_fe_cap_travel_FlightConnection' },
-      { name: 'sap_fe_cap_travel_Passenger' },
-      { name: 'sap_fe_cap_travel_TravelAgency' },
-      { name: 'sap_fe_cap_travel_SupplementType' },
-      { name: 'sap_fe_cap_travel_Travel' },
-      { name: 'sap_fe_cap_travel_Booking' },
-      { name: 'sap_fe_cap_travel_BookingSupplement' },
-      { name: 'sap_fe_cap_travel_BookingStatus' },
-      { name: 'sap_fe_cap_travel_TravelStatus' },
-      { name: 'sap_common_Countries' },
-      { name: 'sap_common_Currencies' },
-      { name: 'sap_fe_cap_travel_Supplement_texts' },
-      { name: 'sap_fe_cap_travel_SupplementType_texts' },
-      { name: 'sap_fe_cap_travel_BookingStatus_texts' },
-      { name: 'sap_fe_cap_travel_TravelStatus_texts' },
-      { name: 'sap_common_Countries_texts' },
-      { name: 'sap_common_Currencies_texts' },
-      { name: 'DRAFT_DraftAdministrativeData' },
-      { name: 'TravelService_Travel_drafts' },
-      { name: 'TravelService_Booking_drafts' },
-      { name: 'TravelService_BookingSupplement_drafts' }
+      Tables:
 
-    These are the columns of my Travel table:
+      sap_fe_cap_travel_Airline
+      sap_fe_cap_travel_Airport
+      sap_fe_cap_travel_Supplement
+      sap_fe_cap_travel_Flight
+      sap_fe_cap_travel_FlightConnection
+      sap_fe_cap_travel_Passenger
+      sap_fe_cap_travel_TravelAgency
+      sap_fe_cap_travel_SupplementType
+      sap_fe_cap_travel_Travel
+      sap_fe_cap_travel_Booking
+      sap_fe_cap_travel_BookingSupplement
+      sap_fe_cap_travel_BookingStatus
+      sap_fe_cap_travel_TravelStatus
+      sap_common_Countries
+      sap_common_Currencies
 
+    These are the columns of sap_fe_cap_travel_Airline:
+    AirlineID, Name, CurrencyCode_code
+
+    These are the column of sap_fe_cap_travel_Airport:
+    AirportID, Name, City, CountryCode_code
+
+    These are the columns of sap_fe_cap_travel_Travel:
     createdAt, createdBy, LastChangedAt, LastChangedBy, TravelUUID, TravelID, BeginDate, EndDate, BookingFee, TotalPrice, CurrencyCode_code,
     Description, TravelStatus_code, to_Agency_AgencyID, to_Customer_CustomerID, GoGreen, GreenFee, TreesPlanted
 
-    These are the columns of my Booking table:
-
+    These are the columns of sap_fe_cap_travel_Booking:
     createdAt, createdBy, LastChangedAt, LastChangedBy, BookingUUID, BookingID, BookingDate, ConnectionID, FlightDate, FlightPrice, 
     CurrencyCode_code, BookingStatus_code, to_Carrier_AirlineID, to_Customer_CustomerID, to_Travel_TravelUUID
 
-    Instruction: Answer by giving me only the raw query as plain text, without using code blocks, formatting, or additional explanations. 
-    Only provide one answer.
+    These are the columns of sap_fe_cap_travel_BookingSupplement:
+    BookSupplUUID, to_Travel_TravelUUID, to_Booking_BookingUUID, BookingSupplementID, to_Supplement_SupplementID, Price, CurrencyCode_code, LastChangedAt
 
-    Here are some examples:
+    These are the columns of sap_fe_cap_travel_Flight:
+    AirlineID, ConnectionID, FlightDate, Price, CurrencyCode_code, PlaneType, MaximumSeats, OccupiedSeats
 
-    Give me the latest travel with status accepted: 
-    SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A' ORDER BY createdAt DESC LIMIT 1
+    These are the columns of sap_fe_cap_travel_FlightConnection
+    AirlineID, ConnectionID, DepartureAirport_AirportID, DestinationAirport_AirportID, DepartureTime, ArrivalTime, Distance, DistanceUnit
 
-    Find all travels with a booking fee below 100:
-    SELECT * FROM sap_fe_cap_travel_Travel WHERE BookingFee < 100;
+    These are the columns of sap_fe_cap_travel_Passenger
+    CustomerID, FirstName, LastName, Title, Street, PostalCode, City, CountryCode_code, PhoneNumber, EMailAddress
 
-    Get the top 5 cheapest travels (by total price):
-    SELECT * FROM sap_fe_cap_travel_Travel ORDER BY TotalPrice ASC LIMIT 5;
+    These are the columns of sap_fe_cap_travel_Supplement
+    SupplementID, Price, Type_code, Description, CurrencyCode_code
 
-    Show travels that start after January 1, 2025:
-    SELECT * FROM sap_fe_cap_travel_Travel WHERE BeginDate > '2025-01-01';
+    These are the columns of sap_fe_cap_travel_TravelAgency
+    AgencyID, Name, Street, PostalCode, City, CountryCode_code, PhoneNumber, EMailAddress, WebAddress
 
-    Retrieve travels with a specific travel ID (e.g., 123):
-    SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelID = 123;
+    **Instructions** 
+    1. Generate only the raw SQL query in plain text based on the provided request.
+    2. Do not include code blocks, additional formatting, or explanations.
+    3. Ensure your answer adheres to the examples provided.
 
-    List all ‘GoGreen’ travels (environment-friendly):
-    SELECT * FROM sap_fe_cap_travel_Travel WHERE GoGreen = TRUE;
+    **Examples**
 
-    Get the most recent travel by creation date:
-    SELECT * FROM sap_fe_cap_travel_Travel ORDER BY createdAt DESC LIMIT 1;
+    Request: "Give me the latest travel with status accepted."
+    Query: SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A' ORDER BY createdAt DESC LIMIT 1
 
-    Find travels with status accepted but total price exceeding 500:
-    SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A' AND TotalPrice > 500;
+    Request: "Find all travels with a booking fee below 100."
+    Query: SELECT * FROM sap_fe_cap_travel_Travel WHERE BookingFee < 100
+
+    Request: "Get the top 5 cheapest travels (by total price)."
+    Query: SELECT * FROM sap_fe_cap_travel_Travel ORDER BY TotalPrice ASC LIMIT 5
+
+    Request: "Show travels that start after January 1, 2025."
+    Query: SELECT * FROM sap_fe_cap_travel_Travel WHERE BeginDate > '2025-01-01'
 
     Answer using this tone: {{?tone}}`;
 
