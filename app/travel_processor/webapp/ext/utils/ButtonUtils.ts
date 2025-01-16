@@ -69,15 +69,26 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
     buttonMode: "Split",
     useDefaultActionOnly: true,
     defaultAction: async () => {
-      await confirmReportDialog(oView);
-      const response = await performTask(
-        oView,
-        template,
-        systemRole,
-        JSON.stringify(collectSelectedContent(oView)),
-        "gpt-35-turbo"
-      );
-      handleGeneratedReport(response);
+      const { confirmed, selectedFormats } = await confirmReportDialog(oView);
+      if (confirmed) {
+        const collectedContent = JSON.stringify(collectSelectedContent(oView));
+
+        // Concatenate content and formats
+        const concatenatedContent = `${collectedContent}\nSelected Formats: ${selectedFormats.join(
+          ", "
+        )}`;
+
+        console.log(concatenatedContent);
+
+        const response = await performTask(
+          oView,
+          template,
+          systemRole,
+          concatenatedContent,
+          "gpt-35-turbo" // Pass formats here
+        );
+        handleGeneratedReport(response);
+      }
     },
   });
 

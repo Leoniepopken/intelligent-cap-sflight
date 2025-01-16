@@ -18,6 +18,7 @@ import CustomListItem from "sap/m/CustomListItem";
 import FormattedText from "sap/m/FormattedText";
 import FlexItemData from "sap/m/FlexItemData";
 import { handleFeedback } from "./FeedbackUtils";
+import CheckBox from "sap/m/CheckBox";
 
 /**
  * Opens the hyperparameters configuration dialog.
@@ -104,8 +105,24 @@ export function openHyperparametersDialog(oView: any): void {
 /**
  * Shows a confirmation dialog and resolves or rejects a promise.
  */
-export function confirmReportDialog(oView: any): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
+export function confirmReportDialog(
+  oView: any
+): Promise<{ confirmed: boolean; selectedFormats: string[] }> {
+  return new Promise((resolve, reject) => {
+    // Initialize checkbox states
+    const formats = [
+      { text: "JSON", selected: false },
+      { text: "Plain text", selected: false },
+    ];
+
+    // Create checkboxes
+    const checkboxes = formats.map((format) => {
+      return new CheckBox({
+        text: format.text,
+        selected: format.selected,
+      });
+    });
+
     const oDialog: Dialog = new Dialog({
       title: "Confirm Report",
       content: [
@@ -123,6 +140,16 @@ export function confirmReportDialog(oView: any): Promise<void> {
               textAlign: "Center",
               width: "100%",
             }),
+            new VBox({
+              items: [
+                new Label({
+                  text: "Select output formats:",
+                  textAlign: "Center",
+                  width: "100%",
+                }),
+                ...checkboxes,
+              ],
+            }),
           ],
         }),
       ],
@@ -130,14 +157,17 @@ export function confirmReportDialog(oView: any): Promise<void> {
         new Button({
           text: "Yes",
           press: function () {
-            resolve();
+            const selectedFormats = checkboxes
+              .filter((cb) => cb.getSelected())
+              .map((cb) => cb.getText());
+            resolve({ confirmed: true, selectedFormats });
             oDialog.close();
           },
         }),
         new Button({
           text: "No",
           press: function () {
-            reject();
+            resolve({ confirmed: false, selectedFormats: [] });
             oDialog.close();
           },
         }),
@@ -154,8 +184,10 @@ export function confirmReportDialog(oView: any): Promise<void> {
  * Opens a dialog that displays and lets the user edit the generated report.
  */
 export function handleGeneratedReport(response: any): void {
+  const responseText =
+    typeof response === "object" ? JSON.stringify(response, null, 2) : response;
   const textArea = new TextArea({
-    value: response,
+    value: responseText,
     width: "100%",
     rows: 10,
   });
