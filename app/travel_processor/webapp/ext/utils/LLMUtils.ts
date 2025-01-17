@@ -289,7 +289,9 @@ export async function performTask(
     // 6. Handle the "no data found" scenario
     if (isQueryResult && queryResult && queryResult.length === 0) {
       // Override finalResponse if the query returned zero rows
-      finalResponse = "For this request I couldn't find any data";
+      finalResponse =
+        "For this request I couldn't find any data. I tried with the following query: " +
+        query;
       return finalResponse;
     }
 
