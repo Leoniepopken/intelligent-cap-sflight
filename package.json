@@ -52,9 +52,18 @@
   "cds": {
     "requires": {
       "db": {
+        "binding": {
+          "type": "cf",
+          "apiEndpoint": "https://api.cf.eu10-004.hana.ondemand.com",
+          "org": "msgsystemsag-06-tum-ai-praktikum-sbx-tdd",
+          "space": "dev",
+          "instance": "popken-hana",
+          "key": "popken-hana-key",
+          "resolved": false
+        },
         "kind": "hana",
-        "credentials": {
-          "service": "default-env"
+        "vcap": {
+          "name": "db"
         }
       },
       "[production]": {
