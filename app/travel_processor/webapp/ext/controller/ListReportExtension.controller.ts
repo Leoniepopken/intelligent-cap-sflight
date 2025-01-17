@@ -1,5 +1,6 @@
 import ControllerExtension from "sap/ui/core/mvc/ControllerExtension";
 import ExtensionAPI from "sap/fe/templates/ObjectPage/ExtensionAPI";
+import URLWhitelist from "sap/base/security/URLWhitelist";
 
 import Button from "sap/m/Button";
 
@@ -22,6 +23,7 @@ export default class ListReportExtension extends ControllerExtension<ExtensionAP
         maxTokens: 1000,
         temperature: 0.7,
       };
+      (URLWhitelist as any).add("blob");
     },
 
     onAfterRendering(this: ExtensionAPI): void {
