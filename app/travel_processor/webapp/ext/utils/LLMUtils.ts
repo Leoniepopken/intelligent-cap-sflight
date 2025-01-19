@@ -247,15 +247,14 @@ export async function performTask(
 ): Promise<string | undefined> {
   try {
     let finalResponse = "";
+    let csvDownloadLink = "";
+    let query: String | undefined;
+    let queryResult: any[] | undefined;
     const model = modelName ?? "gpt-4o";
 
     // 1. Check if the content is a query
     const isQueryResult = await isQuery(oView, content);
     console.log("isQueryResult:", isQueryResult);
-
-    let csvDownloadLink = "";
-    let query: String | undefined;
-    let queryResult: any[] | undefined;
 
     if (isQueryResult) {
       // 2. Transform the text into a SQL query
@@ -277,40 +276,39 @@ export async function performTask(
 
         // Build an HTML link for download
         csvDownloadLink = `<br><br><a href="${csvUrl}" download="results.csv">Download CSV</a>`;
+        finalResponse =
+          "Sure! Here are the results: \n" +
+          csvDownloadLink +
+          " \n I used this query for querying the database: \n " +
+          query;
+      } else if (queryResult && queryResult.length === 0) {
+        finalResponse =
+          "For this request I couldn't find any data. I tried with the following query: " +
+          query;
+      } else {
+        finalResponse =
+          "The query I produced failed. This is the query I used: \n \n" +
+          query;
+      }
+
+      return finalResponse;
+    } else {
+      // 5. Call the LLM service to generate text
+      const llmResponse = await invokeLLMAction(
+        oView,
+        template,
+        systemRole,
+        content,
+        model
+      );
+
+      // Otherwise, build the final response from the LLM’s text
+      if (llmResponse) {
+        return "" + llmResponse;
+      } else {
+        return "No response from LLM";
       }
     }
-
-    // 5. Call the LLM service to generate text
-    const llmResponse = await invokeLLMAction(
-      oView,
-      template,
-      systemRole,
-      content,
-      model
-    );
-
-    // 6. Handle the "no data found" scenario
-    if (isQueryResult && queryResult && queryResult.length === 0) {
-      // Override finalResponse if the query returned zero rows
-      finalResponse =
-        "For this request I couldn't find any data. I tried with the following query: " +
-        query;
-      return finalResponse;
-    }
-
-    // Otherwise, build the final response from the LLM’s text
-    if (llmResponse) {
-      finalResponse = llmResponse + (csvDownloadLink ? csvDownloadLink : "");
-    } else {
-      finalResponse = "No response from LLM";
-    }
-
-    // If this was a query, include the query text
-    if (isQueryResult && query) {
-      finalResponse += `<br><br>I used this query for querying the database: ${query}`;
-    }
-
-    return finalResponse;
   } catch (err) {
     console.log("An error occurred:", err);
   }
