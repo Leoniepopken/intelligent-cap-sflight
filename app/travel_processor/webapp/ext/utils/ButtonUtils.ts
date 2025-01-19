@@ -50,14 +50,23 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
     ],
   });
 
+  const today = new Date().toISOString().split("T")[0];
+
   const template = `You are a travel planner. Tone: {{?tone}}
               Generate a report based on the following content: {{?content}}. 
-              An travel status of X means canceled, A means accepted, B means booked.
+
+              An travel status of X means cancelled, A means accepted, B means booked, O means open.
               The report should be of the following form:
+
+              *Travel report of ${today}*
               - The total number of travels
               - The total number of accepted travels
               - The total number of canceled travels
-              - The total number of rejected travels
+              - The total number of open travels
+              - The total price of all travels added together
+
+              If format is required to be in plain text, the report should be in plain text format.
+              If the format is required to be in JSON, the report should be in JSON text format.
               `;
 
   const systemRole = "You are a travel planner";
@@ -74,7 +83,7 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
         const collectedContent = JSON.stringify(collectSelectedContent(oView));
 
         // Concatenate content and formats
-        const concatenatedContent = `${collectedContent}\nSelected Formats: ${selectedFormats.join(
+        const concatenatedContent = `${collectedContent}\nThe report should be in the following format: ${selectedFormats.join(
           ", "
         )}`;
 
@@ -85,7 +94,7 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
           template,
           systemRole,
           concatenatedContent,
-          "gpt-35-turbo" // Pass formats here
+          "gpt-35-turbo"
         );
         handleGeneratedReport(response);
       }

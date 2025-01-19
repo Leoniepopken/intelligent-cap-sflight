@@ -183,11 +183,9 @@ export function confirmReportDialog(
 /**
  * Opens a dialog that displays and lets the user edit the generated report.
  */
-export function handleGeneratedReport(response: any): void {
-  const responseText =
-    typeof response === "object" ? JSON.stringify(response, null, 2) : response;
+export function handleGeneratedReport(response: string | undefined): void {
   const textArea = new TextArea({
-    value: responseText,
+    value: response || "No response available",
     width: "100%",
     rows: 10,
   });
