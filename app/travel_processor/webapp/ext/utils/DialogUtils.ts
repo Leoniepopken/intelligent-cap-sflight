@@ -361,11 +361,7 @@ export function openChatDialog(oView: any): void {
       try {
         // 4. Call LLM service
         const systemRole = "You are a helpful assistant";
-        const template = `You are given the following content: {{?content}}. Respond using this tone: {{?tone}}.
-          
-          "Certainly! Here is the data you requested:"
-          You may answer with variants of this sentence.
-          `;
+        const template = `You are given the following content: {{?content}}. Respond using this tone: {{?tone}}.`;
 
         // TODO: include other aswer options.
 
