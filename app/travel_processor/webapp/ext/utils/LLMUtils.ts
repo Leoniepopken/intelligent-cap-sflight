@@ -207,6 +207,9 @@ async function transformToQuery(
     Request: "Show travels that start after January 1, 2025."
     Query: SELECT * FROM sap_fe_cap_travel_Travel WHERE BeginDate > '2025-01-01'
 
+    Request: "Give me all accepted travels that were accepted today"
+    Query: SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A' AND DATE(LastChangedAt) = CURRENT_DATE
+
     Answer using this tone: {{?tone}}`;
 
   const systemRole = "You are an expert for SQl.";
