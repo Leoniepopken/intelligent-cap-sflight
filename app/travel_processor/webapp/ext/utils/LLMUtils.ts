@@ -287,9 +287,11 @@ export async function performTask(
           "For this request I couldn't find any data. I tried with the following query: " +
           query;
       } else {
+        // TODO: send message history to make adaptions possible
         finalResponse =
           "The query I produced failed. This is the query I used: \n \n" +
-          query;
+          query +
+          "Would you like to adapt the query?";
       }
 
       return finalResponse;
