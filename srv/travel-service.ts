@@ -248,9 +248,7 @@ export class TravelService extends cds.ApplicationService {
         return results;
       } catch (error) {
         console.log(error);
-        error.message =
-          "Failed to execute query. Please check the query and try again.";
-        throw error;
+        return error;
       }
     });
 
