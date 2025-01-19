@@ -87,7 +87,7 @@ async function isQuery(oView: any, content: any): Promise<Boolean> {
 
     1. **Step 1: Identify if the content is a question.**  
       - If the input contains structured data (e.g., JSON) without a question, the answer is false.  
-      - If the input starts with words like "Who," "What," "When," "Where," "Why," "Give me", or "How," proceed to Step 2.  
+      - If the input starts with words like "Who," "What," "When," "Where," "Why," "Give me", or "How," proceed to Step 2.
 
     2. **Step 2: Evaluate if the request is about specific data.**  
       - Requests requiring retrieval or transformation of specific data into a database query are true.  
@@ -192,6 +192,7 @@ async function transformToQuery(
     1. Generate only the raw SQL query in plain text based on the provided request.
     2. Do not include code blocks, additional formatting, or explanations.
     3. Ensure your answer adheres to the examples provided.
+    4. If the request includes specifications, for how to construct the query, make sure to follow these specifications.
 
     **Examples**
 
