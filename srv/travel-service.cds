@@ -32,3 +32,5 @@ service TravelService @(path:'/processor') {
 }
 
 type Percentage : Integer @assert.range: [1,100];
+
+type MessageObject { role: String; content: String; }; 
