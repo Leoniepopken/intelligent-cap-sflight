@@ -19,6 +19,7 @@ service TravelService @(path:'/processor') {
   // specify the model for each task, bc some task require way less computation power.
   action invokeLLM(
     content: String @Core.OptionalParameter : { $Type : 'Core.OptionalParameterType'}, 
+    messageHistory: array of MessageObject @Core.OptionalParameter : { $Type : 'Core.OptionalParameterType'}, 
     tone : String, 
     maxTokens: Integer, 
     temperature: Double, 

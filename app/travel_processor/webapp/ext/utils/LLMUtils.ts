@@ -101,6 +101,8 @@ async function isQuery(oView: any, content: any): Promise<Boolean> {
     template,
     systemRole,
     additionalContent: content,
+    // Pass empty messageHistory because otherwise user is prompted to insert the messageHistory manually...need to fix this somehow.
+    messageHistory: [],
     modelName: "gpt-35-turbo",
   });
 

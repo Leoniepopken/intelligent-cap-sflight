@@ -368,8 +368,6 @@ export function openChatDialog(oView: any): void {
 
         const messageHistory = transformToMessageHistory(aMessages);
 
-        console.log("MessageHistory:", messageHistory);
-
         const sResponse = await performTask(
           oView,
           template,
