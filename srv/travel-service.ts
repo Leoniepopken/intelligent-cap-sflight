@@ -156,6 +156,7 @@ export class TravelService extends cds.ApplicationService {
     this.on("invokeLLM", async (req: any) => {
       const {
         content,
+        messageHistory,
         tone,
         maxTokens,
         temperature,
@@ -225,6 +226,7 @@ export class TravelService extends cds.ApplicationService {
             content: content,
             tone: tone,
           },
+          messagesHistory: messageHistory,
         });
 
         console.log(response.getContent());
