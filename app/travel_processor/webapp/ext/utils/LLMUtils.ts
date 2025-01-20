@@ -12,6 +12,7 @@ async function invokeLLMAction(
   template: String,
   systemRole: String,
   additionalContent?: any,
+  messageHistory?: any,
   modelName?: String
 ): Promise<String | undefined> {
   try {
@@ -57,6 +58,15 @@ async function invokeLLMAction(
             {
               name: "content",
               value: additionalContent,
+            },
+          ]
+        : []),
+      // Conditionally include 'messageHistory' if provided
+      ...(messageHistory !== undefined && messageHistory !== null
+        ? [
+            {
+              name: "messageHistory",
+              value: messageHistory,
             },
           ]
         : []),
@@ -128,7 +138,9 @@ async function isQuery(oView: any, content: any): Promise<Boolean> {
 
 async function transformToQuery(
   oView: any,
-  content: any
+  content: any,
+  // Include messageHistory to account for possible corrections by the user
+  messageHistory?: any
 ): Promise<String | undefined> {
   // TODO: specify model to use
   const template = `**Task**
@@ -220,6 +232,7 @@ async function transformToQuery(
     template,
     systemRole,
     content,
+    messageHistory,
     "gpt-4o-mini"
   );
 
@@ -244,6 +257,7 @@ export async function performTask(
   template: string,
   systemRole: string,
   content: any,
+  messageHistory?: any,
   modelName?: string
 ): Promise<string | undefined> {
   try {
@@ -259,7 +273,7 @@ export async function performTask(
 
     if (isQueryResult) {
       // 2. Transform the text into a SQL query
-      query = await transformToQuery(oView, content);
+      query = await transformToQuery(oView, content, messageHistory);
       console.log("Query: ", query);
 
       // 3. Invoke the backend action to run the query
@@ -302,6 +316,7 @@ export async function performTask(
         template,
         systemRole,
         content,
+        messageHistory,
         model
       );
 
@@ -331,24 +346,4 @@ function convertToCSV(input: any) {
   }
 
   return csvRows.join("\n");
-}
-
-function downloadCSV(csvString: BlobPart, filename: string) {
-  // Create a Blob with the CSV content
-  const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-
-  // Create a link element
-  const link = document.createElement("a");
-  const url = URL.createObjectURL(blob);
-  link.setAttribute("href", url);
-  link.setAttribute("download", filename);
-  link.style.visibility = "hidden";
-
-  // Append the link, trigger click, and remove
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-
-  // (Optionally) Revoke the object URL
-  URL.revokeObjectURL(url);
 }

@@ -360,16 +360,22 @@ export function openChatDialog(oView: any): void {
 
       try {
         // 4. Call LLM service
-        const systemRole = "You are a helpful assistant";
-        const template = `You are given the following content: {{?content}}. Respond using this tone: {{?tone}}.`;
+        const template = `You are given the following content: {{?content}}. Respond using this tone: {{?tone}}.
+        If you are being asked, what you can do, answer with the following information:
+        You can query the data of the sflight app and provide the result in a downloadable CSV file.`;
 
-        // TODO: include other aswer options.
+        const systemRole = "You are a helpful assistant";
+
+        const messageHistory = transformToMessageHistory(aMessages);
+
+        console.log("MessageHistory:", messageHistory);
 
         const sResponse = await performTask(
           oView,
           template,
           systemRole,
           sText,
+          messageHistory,
           "gpt-35-turbo"
         );
 
@@ -430,4 +436,23 @@ export function openChatDialog(oView: any): void {
   // Add the dialog as a dependent of the view and open
   oView.addDependent(oChatDialog);
   oChatDialog.open();
+}
+
+// Helper function to match the aMessages to the required format to pass a message history
+function transformToMessageHistory(aMessages: any) {
+  return aMessages.map((message: any) => {
+    let role;
+    if (message.sender === "You") {
+      role = "user";
+    } else if (message.sender === "AI") {
+      role = "assistant";
+    } else {
+      throw new Error(`Unknown sender: ${message.sender}`);
+    }
+
+    return {
+      role: role,
+      content: message.text,
+    };
+  });
 }
