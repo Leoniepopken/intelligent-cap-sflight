@@ -7,68 +7,45 @@ import { invokeQueryAction } from "./QueryUtils";
  * @param {string} systemRole - The system role to use for the report. This is a description string!
  * @param {any} additionalContent - The additional content to include in the LLM call.
  */
-async function invokeLLMAction(
-  oView: any,
-  template: String,
-  systemRole: String,
-  additionalContent?: any,
-  messageHistory?: any,
-  modelName?: String
-): Promise<String | undefined> {
+async function invokeLLMAction({
+  oView,
+  template,
+  systemRole,
+  additionalContent,
+  messageHistory,
+  modelName = "gpt-4o", // Default value
+}: {
+  oView: any;
+  template: String;
+  systemRole: String;
+  additionalContent?: any;
+  messageHistory?: any;
+  modelName?: String;
+}): Promise<String | undefined> {
   try {
     const oController = oView.getController();
     const oEditFlow = oController.getExtensionAPI().editFlow;
 
-    // Retrieve any stored hyperparameters (if they exist)
     const hyperparams = (oController as any)._hyperparams || {};
     const tone = hyperparams.tone || "";
     const tokens = hyperparams.maxTokens || 100;
     const temperature = hyperparams.temperature || 0.1;
 
-    const model = modelName ?? "gpt-4o"; // Use provided modelName or default
-
     const parameterValues: any[] = [
       {
         name: "systemRole",
-        value: systemRole || "You are a helpful assistent",
+        value: systemRole || "You are a helpful assistant",
       },
-      {
-        name: "tone",
-        value: tone,
-      },
-      {
-        name: "maxTokens",
-        value: tokens,
-      },
-      {
-        name: "temperature",
-        value: temperature,
-      },
-      {
-        name: "template",
-        value: template,
-      },
-      {
-        name: "modelName", // Always include modelName with the final value
-        value: model,
-      },
-      // Conditionally include 'content' if additionalContent is provided
-      ...(additionalContent !== undefined && additionalContent !== null
-        ? [
-            {
-              name: "content",
-              value: additionalContent,
-            },
-          ]
+      { name: "tone", value: tone },
+      { name: "maxTokens", value: tokens },
+      { name: "temperature", value: temperature },
+      { name: "template", value: template },
+      { name: "modelName", value: modelName },
+      ...(additionalContent
+        ? [{ name: "content", value: additionalContent }]
         : []),
-      // Conditionally include 'messageHistory' if provided
-      ...(messageHistory !== undefined && messageHistory !== null
-        ? [
-            {
-              name: "messageHistory",
-              value: messageHistory,
-            },
-          ]
+      ...(messageHistory
+        ? [{ name: "messageHistory", value: messageHistory }]
         : []),
     ];
 
@@ -76,15 +53,13 @@ async function invokeLLMAction(
       "TravelService.EntityContainer/invokeLLM",
       {
         model: oEditFlow.getView().getModel(),
-        parameterValues: parameterValues,
+        parameterValues,
         skipParameterDialog: true,
       }
     );
 
     return response.value;
   } catch (err) {
-    // This 'catch' is triggered if the user pressed "No" (rejected the promise),
-    // or if an error happened in the code above
     console.log("User canceled or an error occurred:", err);
   }
 }
@@ -121,13 +96,13 @@ async function isQuery(oView: any, content: any): Promise<Boolean> {
     return false;
   }
 
-  const answer = await invokeLLMAction(
+  const answer = await invokeLLMAction({
     oView,
     template,
     systemRole,
-    content,
-    "gpt-35-turbo"
-  );
+    additionalContent: content,
+    modelName: "gpt-35-turbo",
+  });
 
   if (answer?.toLowerCase() === "true") {
     return true;
@@ -227,14 +202,14 @@ async function transformToQuery(
 
   const systemRole = "You are an expert for SQl.";
 
-  const query = await invokeLLMAction(
+  const query = await invokeLLMAction({
     oView,
     template,
     systemRole,
-    content,
+    additionalContent: content,
     messageHistory,
-    "gpt-4o-mini"
-  );
+    modelName: "gpt-4o-mini",
+  });
 
   return query;
 }
@@ -311,14 +286,14 @@ export async function performTask(
       return finalResponse;
     } else {
       // 5. Call the LLM service to generate text
-      const llmResponse = await invokeLLMAction(
+      const llmResponse = await invokeLLMAction({
         oView,
         template,
         systemRole,
-        content,
+        additionalContent: content,
         messageHistory,
-        model
-      );
+        modelName: model,
+      });
 
       // Otherwise, build the final response from the LLM’s text
       if (llmResponse) {
