@@ -71,11 +71,13 @@ async function isQuery(oView: any, content: any): Promise<Boolean> {
     Determine if the content is a **request** about specific data that needs to be transformed into a database query.  
 
     1. **Step 1: Identify if the content is a question.**  
-      - If the input contains structured data (e.g., JSON) without a question, the answer is false.  
+      - If the input contains structured data (e.g., JSON) without a question, the answer is false. 
+      - However: if the input request to adapt a previous query, the answer is true.
       - If the input starts with words like "Who," "What," "When," "Where," "Why," "Give me", or "How," proceed to Step 2.
 
     2. **Step 2: Evaluate if the request is about specific data.**  
-      - Requests requiring retrieval or transformation of specific data into a database query are true.  
+      - Requests requiring retrieval or transformation of specific data into a database query are true. 
+      - Requests for the adaption of a previous query are true. 
       - General or unrelated questions (e.g., "Is the agency trustworthy?") are false.  
 
     **Examples:**  
