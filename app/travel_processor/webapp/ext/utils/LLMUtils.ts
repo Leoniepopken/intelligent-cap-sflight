@@ -231,14 +231,23 @@ function isJSON(content: any) {
 }
 
 /* This function routes the tasks. It checks what to do. */
-export async function performTask(
-  oView: any,
-  template: string,
-  systemRole: string,
-  content: any,
-  messageHistory?: any,
-  modelName?: string
-): Promise<string | undefined> {
+export async function performTask({
+  oView,
+  template,
+  systemRole,
+  additionalContent,
+  messageHistory,
+  modelName = "gpt-4o", // Default value
+}: {
+  oView: any;
+  template: String;
+  systemRole: String;
+  additionalContent?: any;
+  messageHistory?: any;
+  modelName?: String;
+}): Promise<string | undefined> {
+  console.log("message history in performTask: ", messageHistory);
+
   try {
     let finalResponse = "";
     let csvDownloadLink = "";
@@ -247,12 +256,12 @@ export async function performTask(
     const model = modelName ?? "gpt-4o";
 
     // 1. Check if the content is a query
-    const isQueryResult = await isQuery(oView, content);
+    const isQueryResult = await isQuery(oView, additionalContent);
     console.log("isQueryResult:", isQueryResult);
 
     if (isQueryResult) {
       // 2. Transform the text into a SQL query
-      query = await transformToQuery(oView, content, messageHistory);
+      query = await transformToQuery(oView, additionalContent, messageHistory);
       console.log("Query: ", query);
 
       // 3. Invoke the backend action to run the query
@@ -294,7 +303,7 @@ export async function performTask(
         oView,
         template,
         systemRole,
-        additionalContent: content,
+        additionalContent,
         messageHistory,
         modelName: model,
       });

@@ -368,14 +368,14 @@ export function openChatDialog(oView: any): void {
 
         const messageHistory = transformToMessageHistory(aMessages);
 
-        const sResponse = await performTask(
+        const sResponse = await performTask({
           oView,
           template,
           systemRole,
-          sText,
+          additionalContent: sText,
           messageHistory,
-          "gpt-35-turbo"
-        );
+          modelName: "gpt-35-turbo",
+        });
 
         console.log("Response:", sResponse);
 

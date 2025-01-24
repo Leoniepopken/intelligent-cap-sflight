@@ -89,13 +89,14 @@ export function attachMenuButton(oView: any, sButtonId: string): void {
 
         console.log(concatenatedContent);
 
-        const response = await performTask(
+        const response = await performTask({
           oView,
           template,
           systemRole,
-          concatenatedContent,
-          "gpt-35-turbo"
-        );
+          additionalContent: concatenatedContent,
+          messageHistory: [],
+          modelName: "gpt-35-turbo",
+        });
         handleGeneratedReport(response);
       }
     },
