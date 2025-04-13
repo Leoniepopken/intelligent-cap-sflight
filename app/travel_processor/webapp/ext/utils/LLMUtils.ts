@@ -202,8 +202,10 @@ async function transformToQuery(
     Request: "Give me all accepted travels that were accepted today"
     Query: SELECT * FROM sap_fe_cap_travel_Travel WHERE TravelStatus_code = 'A' AND DATE(LastChangedAt) = CURRENT_DATE
 
-    Answer using this tone: {{?tone}}`;
-
+    Answer using this tone: {{?tone}}
+    
+    Make sure to only answer with SELECT statement. Never with UPDATE, DELETE, INSERT, PUT, etc.
+    `;
   const systemRole = "You are an expert for SQl.";
 
   const query = await invokeLLMAction({
